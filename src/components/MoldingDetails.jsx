@@ -1,0 +1,859 @@
+import React, { useState, useMemo } from "react";
+import {
+  ChevronLeft,
+  Edit2,
+  Plus,
+  Trash2,
+  Save,
+  Package,
+  Settings,
+  Clock,
+  ClipboardList,
+  Activity,
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Maximize2,
+  Edit,
+  Edit3,
+  X,
+} from "lucide-react";
+
+const MoldingDetail = ({ moldingData, onBack }) => {
+  const [expandedRoll, setExpandedRoll] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showHeightModal, setShowHeightModal] = useState(false);
+  const [tempHeights, setTempHeights] = useState([]);
+  const [heightSets, setHeightSets] = useState([
+    98, 98, 98, 98, 98, 98, 98, 98, 98, 98,
+  ]);
+
+  // คำนวณสถิติความสูงจาก Array ปัจจุบัน
+  const heightStats = useMemo(() => {
+    if (heightSets.length === 0) return { total: 0, min: 0, max: 0, avg: 0 };
+    const total = heightSets.reduce((a, b) => a + b, 0);
+    return {
+      total: total,
+      min: Math.min(...heightSets),
+      max: Math.max(...heightSets),
+      avg: (total / heightSets.length).toFixed(1),
+    };
+  }, [heightSets]);
+
+  // ฟังก์ชันเปิด Modal แก้ไขความสูง
+  const handleOpenHeightModal = () => {
+    setTempHeights([...heightSets]); // สำเนาข้อมูลเดิมไปที่ Temp
+    setShowHeightModal(true);
+  };
+
+  // ฟังก์ชันเพิ่มช่องตั้งงานใหม่ใน Modal
+  const addNewHeightField = () => {
+    setTempHeights([...tempHeights, 0]); // เพิ่มค่าเริ่มต้นเป็น 0
+  };
+
+  // ฟังก์ชันบันทึกข้อมูลความสูง
+  const handleSaveHeights = () => {
+    setHeightSets([...tempHeights]);
+    setShowHeightModal(false);
+  };
+
+  // ข้อมูลจำลองรายการม้วนที่ผลิต (อ้างอิงจากใบงานจริง)
+  const [productionRolls] = useState([
+    {
+      id: 1,
+      rollNo: 1,
+      lotNo: "110825",
+      seq: 15,
+      mfgDate: "09-08-25",
+      weight: 205.4,
+      thicknessBefore: 0.55,
+      thicknessAfter: 0.5,
+      outputA: 618,
+      outputB: 1,
+      scrap: 0,
+      total: 619,
+      status: "Complete",
+    },
+    {
+      id: 2,
+      rollNo: 2,
+      lotNo: "110825",
+      seq: 13,
+      mfgDate: "09-08-25",
+      weight: 205.35,
+      thicknessBefore: 0.55,
+      thicknessAfter: 0.5,
+      outputA: 614,
+      outputB: 1,
+      scrap: 0,
+      total: 615,
+      status: "Complete",
+    },
+  ]);
+  // const totals = useMemo(() => {
+  //   return productionRolls.reduce(
+  //     (acc, roll) => ({
+  //       outputA: acc.outputA + roll.outputA,
+  //       outputB: acc.outputB + roll.outputB,
+  //       scrap: acc.scrap + roll.scrap,
+  //       total: acc.total + roll.total,
+  //       weight: acc.weight + roll.weight,
+  //     }),
+  //     { outputA: 0, outputB: 0, scrap: 0, total: 0, weight: 0 },
+  //   );
+  // }, [productionRolls]);
+
+  return (
+    <div className="min-h-screen bg-[#f8fafc] font-sans pb-20 text-slate-800">
+      {/* --- 1. TOP HEADER BAR --- */}
+      <div className="bg-white border-b border-slate-200 px-8 py-5 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <div className="flex items-center space-x-4">
+          <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
+            <Activity size={20} />
+          </div>
+          <div>
+            <h1 className="text-xl font-black text-slate-800 tracking-tight leading-none uppercase">
+              Job No :{" "}
+              <span className="text-indigo-700">
+                {moldingData?.jobNo || "104/0868"}
+              </span>
+            </h1>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 italic">
+              Forming Production Detailed Record
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-3">
+          <button className="flex items-center space-x-2 px-5 py-2.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl font-bold text-xs hover:bg-blue-100 transition-all active:scale-95">
+            <Maximize2 size={14} /> <span>Print Report</span>
+          </button>
+          <button
+            onClick={onBack}
+            className="flex items-center space-x-2 px-6 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 shadow-sm active:scale-95 uppercase"
+          >
+            <ChevronLeft size={16} /> <span>Back To List</span>
+          </button>
+        </div>
+      </div>
+
+      <main className="max-w-7xl mx-auto p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* --- 2. SUMMARY CARDS (Specs & Times) --- */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* ข้อมูลการผลิตหลัก */}
+          <InfoCard
+            title="Production Details"
+            icon={<ClipboardList size={18} className="text-blue-600" />}
+            onEdit={() => console.log("เปิด Modal แก้ไขรายละเอียดการผลิต")}
+          >
+            <DetailRow label="รหัสสินค้า" value="PP-PL17 FB" isStrong />
+            <DetailRow label="วันที่ผลิต" value="15/08/2568" />
+            <DetailRow label="กะการผลิต" value="A (07:00 - 19:00 น.)" />
+            <DetailRow
+              label="เครื่องจักร"
+              value="MC-VF-1"
+              color="text-indigo-600"
+              isStrong
+            />
+          </InfoCard>
+
+          {/* ค่ามาตรฐาน Specs (อ้างอิงจากรูป) */}
+          <InfoCard
+            title="Quality Standards"
+            icon={<Settings size={18} className="text-emerald-600" />}
+            onEdit={() => console.log("เปิด Modal แก้ไขรายละเอียดการผลิต")}
+          >
+            <DetailRow label="ขนาด (กxยxส)" value="208 x 263 x 36 mm" />
+            <DetailRow label="ความหนาเป้าหมาย" value="20.40 micron" isStrong />
+            <DetailRow label="สีสินค้า" value="สีดำ" />
+            <DetailRow
+              label="รหัสวัตถุดิบหลัก"
+              value="5B660055FB"
+              color="text-blue-600"
+            />
+          </InfoCard>
+
+          {/* Card: ข้อมูลการผลิต (อ้างอิงจากรูป f4ff04 และใบงานจริง) */}
+          <InfoCard
+            title="Production Statistics"
+            icon={<Clock size={18} className="text-blue-600" />}
+            onEdit={() => console.log("เปิด Modal แก้ไขรายละเอียดการผลิต")}
+          >
+            <div className="space-y-4 pt-1">
+              <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-tight">
+                  จำนวนเฟรมต่อม้วน
+                </span>
+                <span className="text-sm font-black text-slate-700">
+                  7,400{" "}
+                  <span className="text-[10px] font-normal text-slate-400">
+                    Frames
+                  </span>
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+                    จำนวนชิ้นต่อเฟรม
+                  </p>
+                  <p className="text-sm font-black text-slate-700">
+                    8 <span className="text-[10px] font-normal">ชิ้น</span>
+                  </p>
+                </div>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">
+                    เวลาในการผลิตทั้งหมด
+                  </p>
+                  <p className="text-sm font-black text-slate-700">
+                    12 <span className="text-[10px] font-normal">ชม.</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-blue-600 p-4 rounded-2xl shadow-lg shadow-blue-100 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-black text-blue-100 uppercase tracking-widest leading-none">
+                    จำนวนม้วนที่ได้ใน 1 ชม.
+                  </p>
+                  <p className="text-[9px] text-blue-200 mt-1 italic">
+                    Average Output Rate
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-black text-white leading-none">
+                    0.52
+                  </span>
+                  <p className="text-[10px] font-bold text-blue-100 uppercase mt-1 text-center">
+                    Rolls/Hr
+                  </p>
+                </div>
+              </div>
+            </div>
+          </InfoCard>
+
+          {/* สรุปผลผลิตรวม */}
+          {/* <InfoCard
+            title="Total Accumulated"
+            icon={<Package size={18} className="text-orange-600" />}
+          >
+            <div className="grid grid-cols-2 gap-4 pt-2">
+              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100">
+                <p className="text-[10px] font-black text-emerald-600 uppercase">
+                  Grade A
+                </p>
+                <p className="text-xl font-black text-emerald-700">3,841</p>
+              </div>
+              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-100">
+                <p className="text-[10px] font-black text-amber-600 uppercase">
+                  Grade B
+                </p>
+                <p className="text-xl font-black text-amber-700">9</p>
+              </div>
+              <div className="p-3 bg-red-50 rounded-2xl border border-red-100 col-span-2">
+                <p className="text-[10px] font-black text-red-600 uppercase text-center">
+                  Total Scrap (เสีย)
+                </p>
+                <p className="text-xl font-black text-red-700 text-center">
+                  385 <span className="text-xs font-normal">ชิ้น</span>
+                </p>
+              </div>
+            </div>
+          </InfoCard> */}
+        </div>
+
+        {/* --- 3. PRODUCTION TABLE (ROLL BY ROLL) --- */}
+        <div className="mb-10">
+          <div className="flex justify-between items-end mb-6 px-2">
+            <div>
+              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center">
+                <Activity size={24} className="mr-2 text-indigo-600" />{" "}
+                รายละเอียดผลการขึ้นรูปรายม้วน
+              </h3>
+              <p className="text-xs font-bold text-slate-400 mt-1 italic">
+                ตรวจสอบข้อมูลดิบ น้ำหนักม้วน และ QC แต่ละ Roll
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center space-x-2 px-6 py-3 bg-[#004a99] text-white rounded-2xl font-black text-xs hover:bg-blue-800 transition-all shadow-xl active:scale-95 border-b-4 border-blue-900"
+            >
+              <Plus size={18} /> <span>เพิ่มข้อมูลม้วนใหม่</span>
+            </button>
+          </div>
+
+          <div className="bg-white rounded-4xl shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-[#f1f3f5] border-b border-slate-300">
+                <tr className="text-[10px] font-black uppercase tracking-widest text-slate-600 divide-x divide-slate-200">
+                  <th className="px-6 py-4 text-center w-28">Tool</th>
+                  <th className="px-4 py-4 text-center w-20">ม้วนที่</th>
+                  <th className="px-6 py-4">Lot-No / Seq</th>
+                  <th className="px-6 py-4 text-center">น.น. ม้วน (kg)</th>
+                  <th className="px-6 py-4 text-center">ความหนา (ก/ห)</th>
+                  <th className="px-6 py-4 text-center">ผลผลิต A</th>
+                  <th className="px-6 py-4 text-center">ผลผลิต B</th>
+                  <th className="px-6 py-4 text-center">เสีย</th>
+                  <th className="px-6 py-4 text-center">รวม (Pcs)</th>
+                  <th className="px-6 py-4 text-center">ค่าอื่นๆ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 text-sm">
+                {productionRolls.map((roll) => (
+                  <React.Fragment key={roll.id}>
+                    <tr
+                      className={`hover:bg-indigo-50/30 transition-colors divide-x divide-slate-100 ${expandedRoll === roll.id ? "bg-indigo-50/50" : ""}`}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center space-x-2">
+                          <button
+                            onClick={() =>
+                              setExpandedRoll(
+                                expandedRoll === roll.id ? null : roll.id,
+                              )
+                            }
+                            className="p-2 bg-white text-slate-400 rounded-lg hover:text-indigo-600 border border-slate-100 shadow-sm"
+                          >
+                            {expandedRoll === roll.id ? (
+                              <ChevronUp size={16} />
+                            ) : (
+                              <Maximize2 size={16} />
+                            )}
+                          </button>
+                          <button className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all active:scale-90 shadow-sm">
+                            <Edit2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-center font-black text-slate-400">
+                        #{roll.rollNo}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-slate-800">
+                          {roll.lotNo}
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-bold uppercase italic">
+                          Sequence: {roll.seq}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center font-bold text-blue-700 bg-blue-50/30">
+                        {roll.weight}
+                      </td>
+                      <td className="px-6 py-4 text-center text-slate-500 font-medium">
+                        {roll.thicknessBefore} / {roll.thicknessAfter}
+                      </td>
+                      <td className="px-6 py-4 text-center font-black text-emerald-600 text-base">
+                        {roll.outputA}
+                      </td>
+                      <td className="px-6 py-4 text-center font-black text-orange-600 text-base">
+                        {roll.outputB}
+                      </td>
+                      <td className="px-6 py-4 text-center font-black text-slate-600 text-base">
+                        {roll.scrap}
+                      </td>
+                      <td className="px-6 py-4 text-center font-black text-slate-800">
+                        {roll.total}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <button
+                          onClick={() => {
+                            /* ใส่ฟังก์ชันสำหรับเปิดดูข้อมูลละเอียดตรงนี้ เช่น เปิด Modal */
+                            console.log(
+                              "Viewing detailed data for roll ID:",
+                              roll.id,
+                            );
+                          }}
+                          className="text-slate-600 font-bold hover:text-blue-600 transition-colors underline decoration-1 underline-offset-4 decoration-slate-400 hover:decoration-blue-600"
+                        >
+                          View
+                        </button>
+                        {/* <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-tighter border border-emerald-200">
+                          {roll.status}
+                        </span> */}
+                      </td>
+                    </tr>
+
+                    {/* Expandable QC Section (อ้างอิงจากใบ QC ในรูป) */}
+                    {expandedRoll === roll.id && (
+                      <tr>
+                        <td
+                          colSpan="8"
+                          className="px-10 py-6 bg-slate-50/50 border-y border-indigo-100"
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-top-2 duration-300">
+                            <div className="space-y-4">
+                              <h4 className="text-xs font-black text-indigo-700 uppercase flex items-center">
+                                <AlertTriangle size={14} className="mr-2" />{" "}
+                                ปัญหาที่พบระหว่างกระบวนการ (QC Check)
+                              </h4>
+                              <div className="grid grid-cols-2 gap-2">
+                                <QCBadge label="เป็นรอยยับ" checked={false} />
+                                <QCBadge label="ม้วนโฟมติด" checked={true} />
+                                <QCBadge
+                                  label="พบสิ่งแปลกปลอม"
+                                  checked={true}
+                                />
+                                <QCBadge label="ปิดฝาไม่ได้" checked={false} />
+                              </div>
+                            </div>
+                            {/* <div className="bg-white p-4 rounded-2xl border border-indigo-100 shadow-inner">
+                              <h4 className="text-xs font-black text-slate-400 uppercase mb-2">
+                                Internal Remarks for Roll #{roll.rollNo}
+                              </h4>
+                              <p className="text-sm font-bold text-slate-600 italic">
+                                "ความหนาช่วงท้ายม้วนมีความแกว่งเล็กน้อย (0.48 -
+                                0.52) ฝ่ายตัดกรุณาตรวจสอบหน้ากว้างให้แม่นยำ"
+                              </p>
+                            </div> */}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+
+              {/* --- เพิ่มแถวผลรวมสะสมตามใบงานจริง (image_11ade9) --- */}
+              <tfoot className="bg-[#f8fafc] border-t-4 border-slate-300 font-black">
+                <tr className="divide-x divide-slate-200">
+                  <td
+                    colSpan="3"
+                    className="px-8 py-5 text-center font-black text-slate-500 uppercase tracking-widest text-[11px]"
+                  >
+                    รวม <br />
+                    <span className="text-[9px] lowercase font-bold opacity-60">
+                      (นน. และความหนาเป็นค่าเฉลี่ย)
+                    </span>
+                  </td>
+                  {/* ค่าเฉลี่ยน้ำหนัก */}
+                  <td className="px-6 py-5 text-center text-blue-700 text-base bg-blue-50/30">
+                    206
+                  </td>
+                  {/* ช่องความหนาเฉลี่ย (ว่างไว้หรือแสดงค่ากลาง) */}
+                  <td className="px-6 py-5 text-center text-slate-400 italic">
+                    0.55 / 0.5
+                  </td>
+                  {/* ผลรวมสะสม A, B, เสีย, รวม Pcs */}
+                  <td className="px-6 py-5 text-center text-emerald-700 text-lg bg-emerald-50/30">
+                    1,232
+                  </td>
+                  <td className="px-6 py-5 text-center text-orange-700 text-lg bg-orange-50/30">
+                    2
+                  </td>
+                  <td className="px-6 py-5 text-center text-slate-700 text-lg bg-red-50/30">
+                    0
+                  </td>
+                  <td className="px-6 py-5 text-center bg-slate-100 text-slate-900 text-lg">
+                    1,234
+                  </td>
+                  <td className="bg-slate-50"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        {/* --- 4. PRODUCTION HEIGHT LOG (ทุก 100 เฟรม ตามใบงาน) --- */}
+        <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden mb-8">
+          {" "}
+          {/* เพิ่ม mb-8 เพื่อเว้นระยะห่าง */}
+          <div className="px-10 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <div className="flex items-center space-x-3 text-slate-800 font-black uppercase text-sm tracking-tight">
+              <Clock size={20} className="text-blue-600" />{" "}
+              <span>บันทึกความสูงของตั้งงาน (Every 100 Frames)</span>
+            </div>
+            <button
+              onClick={handleOpenHeightModal}
+              className="p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md active:scale-90 transition-all"
+            >
+              <Edit size={16} />
+            </button>
+          </div>
+          <div className="p-10 space-y-8">
+            {/* Grid แสดงค่าความสูงแต่ละเซต */}
+            <div className="grid grid-cols-5 md:grid-cols-10 gap-3">
+              {heightSets.map((val, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col items-center p-3 bg-gray-50 rounded-2xl border border-slate-100 shadow-sm"
+                >
+                  <span className="text-[9px] font-black text-slate-400 uppercase mb-1">
+                    Set {i + 1}
+                  </span>
+                  <span className="text-sm font-black text-blue-600">
+                    {val}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* ส่วนสรุปสถิติความสูงที่เพิ่มเข้ามา (อ้างอิงรูป image_113950) */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 border-t border-slate-100 pt-8 text-center">
+              <HeightStatItem
+                label="รวมทั้งหมด"
+                value={heightStats.total}
+                color="bg-slate-800 text-white"
+              />
+              <HeightStatItem
+                label="ต่ำสุด (Min)"
+                value={heightStats.min}
+                color="bg-red-50 border border-red-100 text-red-600"
+              />
+              <HeightStatItem
+                label="สูงสุด (Max)"
+                value={heightStats.max}
+                color="bg-emerald-50 border border-emerald-100 text-emerald-600"
+              />
+              <HeightStatItem
+                label="เฉลี่ย (Avg)"
+                value={heightStats.avg}
+                color="bg-blue-600 text-white shadow-lg shadow-blue-100"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* --- MODAL: กำหนดตั้งความสูง (อ้างอิงรูป image_1d12b5) --- */}
+        {showHeightModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="bg-white p-8 border-b border-slate-100 flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-blue-50 text-blue-600 p-2.5 rounded-2xl">
+                    <Edit2 size={22} />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">
+                    กำหนดตั้งความสูง
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowHeightModal(false)}
+                  className="p-2 text-slate-400 hover:bg-slate-100 rounded-full"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="p-10 max-h-[60vh] overflow-y-auto">
+                <div className="grid grid-cols-5 md:grid-cols-8 gap-4 mb-8">
+                  {tempHeights.map((val, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
+                        ตั้งที่ {idx + 1}
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-center text-blue-600 focus:ring-2 focus:ring-blue-500 outline-none"
+                        value={val}
+                        onChange={(e) => {
+                          const newArr = [...tempHeights];
+                          newArr[idx] = Number(e.target.value);
+                          setTempHeights(newArr);
+                        }}
+                      />
+                    </div>
+                  ))}
+
+                  {/* ปุ่ม + เพิ่มตั้ง (อ้างอิงรูป image_1d12b5) */}
+                  <div className="flex items-end">
+                    <button
+                      onClick={addNewHeightField}
+                      className="w-full h-12.5 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 hover:border-blue-400 hover:text-blue-500 hover:bg-blue-50 transition-all active:scale-95"
+                    >
+                      <Plus size={20} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end space-x-4">
+                <button
+                  onClick={() => setShowHeightModal(false)}
+                  className="px-10 py-3.5 font-black text-slate-400 uppercase tracking-widest hover:text-slate-600"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  onClick={handleSaveHeights}
+                  className="px-12 py-3.5 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-100 flex items-center space-x-2 active:scale-95 transition-all"
+                >
+                  <Save size={18} /> <span>บันทึกข้อมูล</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* --- 5. PRODUCTION ISSUES (สไตล์เดียวกับ MaterialsDetail) --- */}
+        <div className="bg-white rounded-4xl border border-slate-200 shadow-xl overflow-hidden">
+          <div className="px-10 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <div className="flex items-center space-x-3 text-slate-800 font-black uppercase text-sm tracking-tight">
+              <button className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:scale-90 transition-all shadow-md">
+                <Plus size={16} />
+              </button>
+              <span>ปัญหาที่พบระหว่างกระบวนการผลิต (Production Issues)</span>
+            </div>
+          </div>
+          <div className="p-10">
+            <div className="flex items-start space-x-8 group">
+              <div className="flex flex-col items-center space-y-3 pt-2">
+                <button className="p-3 bg-white text-slate-400 border border-slate-200 rounded-2xl hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all shadow-sm">
+                  <Edit2 size={18} />
+                </button>
+                <button className="p-3 bg-white text-slate-400 border border-slate-200 rounded-2xl hover:text-red-500 hover:border-red-300 hover:bg-red-50 transition-all shadow-sm">
+                  <Trash2 size={18} />
+                </button>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center text-slate-600 font-black text-xs border-2 border-white shadow-inner">
+                      AS
+                    </div>
+                    <div>
+                      <p className="text-[12px] font-black text-slate-700 uppercase">
+                        Admin Staff
+                      </p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">
+                        21 Jan 2026 • 15:30 น.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-yellow-50/70 p-8 rounded-3xl border border-yellow-100 text-sm font-bold text-slate-700 leading-relaxed italic shadow-inner">
+                  "ฟิล์มเคลือบไม่ติดกับชิ้นงานในช่วงต้นม้วน"
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* --- MODAL: บันทึกข้อมูลม้วนใหม่ --- */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="bg-[#004a99] p-6 text-white flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                <Plus className="bg-white/20 p-1.5 rounded-lg" />
+                <h3 className="font-black uppercase tracking-tight">
+                  บันทึกข้อมูลม้วนที่ {productionRolls.length + 1}
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="hover:bg-white/20 p-2 rounded-full transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 max-h-[75vh] overflow-y-auto">
+              {/* Column 1: วัตถุดิบและผลผลิต */}
+              <div className="space-y-5">
+                <h4 className="text-blue-700 font-black uppercase text-sm border-b pb-2">
+                  วัตถุดิบและสเปค
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <ModalInput label="LOT NO." placeholder="เลข Lot" />
+                  <ModalInput
+                    label="SEQ (ลำดับ)"
+                    type="number"
+                    placeholder="0"
+                  />
+                </div>
+                <ModalInput
+                  label="น้ำหนักม้วน (KG)"
+                  type="number"
+                  step="0.1"
+                  placeholder="0.00"
+                  isHighlight
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <ModalInput
+                    label="ความหนาก่อน VAC"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                  />
+                  <ModalInput
+                    label="ความหนาหลัง VAC"
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                  />
+                </div>
+                <ModalSelect
+                  label="ประเภทกล่อง"
+                  options={["กล่องไม่มีรู", "กล่องร่องพับไม่ได้"]}
+                />
+                <ModalSelect label="ลักษณะสินค้า" options={["กรอบ", "นิ่ม"]} />
+              </div>
+
+              {/* Column 2: ปัญหาที่พบ (QC) */}
+              <div className="space-y-4">
+                <h4 className="text-red-600 font-black uppercase text-sm border-b pb-2">
+                  ปัญหาที่พบ (QC)
+                </h4>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    "หน้ากว้างไม่เท่า",
+                    "เป็นรอยยับ",
+                    "ม้วนโฟมติด",
+                    "สีมีปัญหา",
+                    "ฟิล์มเคลือบไม่ติด",
+                    "ฟิล์มมีรอยยับ",
+                    "ฟิล์มเคลือบไม่ตรง",
+                    "การปิดฝาไม่ได้",
+                    "พบสิ่งแปลกปลอม",
+                  ].map((issue) => (
+                    <label
+                      key={issue}
+                      className="flex items-center space-x-3 p-2.5 bg-slate-50 rounded-xl border border-transparent hover:border-red-200 cursor-pointer transition-all"
+                    >
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500"
+                      />
+                      <span className="text-[11px] font-bold text-slate-600 uppercase tracking-tighter">
+                        {issue}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Column 3: สรุปยอดม้วน */}
+              <div className="space-y-6 bg-slate-50 p-6 rounded-3xl h-fit border border-slate-200">
+                <h4 className="text-slate-800 font-black uppercase text-sm border-b border-slate-200 pb-2 text-center">
+                  สรุปผลผลิตม้วนนี้
+                </h4>
+                <ModalInput label="ผลผลิต A" type="number" placeholder="0" />
+                <ModalInput label="ผลผลิต B" type="number" placeholder="0" />
+                <ModalInput
+                  label="เสีย (SCRAP)"
+                  type="number"
+                  placeholder="0"
+                />
+
+                <div className="pt-4 border-t border-slate-200">
+                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
+                    หมายเหตุ / REMARK
+                  </label>
+                  <textarea
+                    className="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold h-24 focus:ring-2 focus:ring-indigo-500 outline-none"
+                    placeholder="ระบุรายละเอียดเพิ่มเติม..."
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end space-x-4">
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="px-8 py-3.5 font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-colors"
+              >
+                ยกเลิก
+              </button>
+              <button className="px-12 py-3.5 bg-[#004a99] text-white font-black rounded-2xl shadow-xl shadow-blue-100 flex items-center space-x-2 active:scale-95 transition-all border-b-4 border-blue-900">
+                <Save size={18} /> <span>ยืนยันบันทึกข้อมูล</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- Helper Components ---
+const ModalInput = ({ label, isHighlight, ...props }) => (
+  <div className="space-y-1">
+    <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">
+      {label}
+    </label>
+    <input
+      className={`w-full p-3.5 border border-slate-200 rounded-2xl font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all ${isHighlight ? "bg-blue-50 border-blue-200 text-blue-700 shadow-inner" : "bg-white"}`}
+      {...props}
+    />
+  </div>
+);
+
+const ModalSelect = ({ label, options }) => (
+  <div className="space-y-1">
+    <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">
+      {label}
+    </label>
+    <select className="w-full p-3.5 border border-slate-200 rounded-2xl font-bold text-sm bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+      {options.map((opt) => (
+        <option key={opt} value={opt}>
+          {opt}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+const HeightStatItem = ({ label, value, color }) => (
+  <div
+    className={`p-4 rounded-2xl flex flex-col items-center justify-center ${color}`}
+  >
+    <span className="text-[10px] font-black uppercase mb-0.5 opacity-70 tracking-widest">
+      {label}
+    </span>
+    <span className="text-xl font-black">{value}</span>
+  </div>
+);
+
+// --- Sub-components ---
+const InfoCard = ({ title, icon, children, onEdit }) => (
+  <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md transition-all relative">
+    <div className="flex items-center justify-between mb-4 border-b border-slate-50 pb-3">
+      <div className="flex items-center space-x-3">
+        {icon}
+        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          {title}
+        </h4>
+      </div>
+
+      {/* เพิ่มปุ่ม Edit สไตล์เดียวกับบันทึกตั้งงาน */}
+      {onEdit && (
+        <button
+          onClick={onEdit}
+          className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:scale-90 transition-all shadow-md"
+        >
+          <Edit3 size={14} />
+        </button>
+      )}
+    </div>
+    <div className="space-y-3">{children}</div>
+  </div>
+);
+
+const DetailRow = ({ label, value, isStrong, color = "text-slate-700" }) => (
+  <div className="flex justify-between items-center group">
+    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+      {label}
+    </span>
+    <span
+      className={`text-sm font-bold ${isStrong ? "font-black" : ""} ${color}`}
+    >
+      {value || "-"}
+    </span>
+  </div>
+);
+
+const QCBadge = ({ label, checked }) => (
+  <div
+    className={`px-3 py-2 rounded-xl border text-[11px] font-bold flex items-center justify-between ${checked ? "bg-red-50 border-red-200 text-red-700" : "bg-slate-50 border-slate-100 text-slate-400"}`}
+  >
+    {label}
+    <div
+      className={`w-2 h-2 rounded-full ${checked ? "bg-red-500 animate-pulse" : "bg-slate-300"}`}
+    ></div>
+  </div>
+);
+
+export default MoldingDetail;
