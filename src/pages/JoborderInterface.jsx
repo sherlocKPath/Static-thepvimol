@@ -218,7 +218,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
             className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-200/50 transition-colors"
           >
             <div className="flex items-center space-x-2 text-slate-600">
-              <Search className="w-4 h-4" />
+              <Search className="w-4 h-4 text-[#004a99]" />
               <span className="text-sm font-bold">ค้นหา</span>
             </div>
             {isSearchExpanded ? (
@@ -231,9 +231,10 @@ const JobOrderInterface = ({ setCurrentPage }) => {
           {isSearchExpanded && (
             <form
               onSubmit={handleSearchSubmit}
-              className="bg-white px-6 pb-6 pt-6 border-t border-slate-200"
+              className="bg-white px-6 pb-6 pt-6 border-t border-slate-200 animate-in fade-in duration-300"
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* ค้นหาด้วย Job No. */}
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-600 uppercase">
                     Job No.
@@ -244,47 +245,76 @@ const JobOrderInterface = ({ setCurrentPage }) => {
                     onChange={handleInputChange}
                     type="text"
                     placeholder="ระบุเลขที่ Job"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm font-semibold"
                   />
                 </div>
+
+                {/* ค้นหาด้วยรหัสสินค้า */}
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-600 uppercase">
-                    รหัสสินค้า / รายละเอียด
+                    รหัสสินค้า
                   </label>
                   <input
                     name="productCode"
                     value={tempSearch.productCode}
                     onChange={handleInputChange}
                     type="text"
-                    placeholder="ระบุรหัสหรือชื่อสินค้า"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm"
+                    placeholder="ระบุรหัสสินค้า"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm font-semibold"
                   />
                 </div>
+
+                {/* ปรับปรุง: ค้นหาตามช่วงวันที่ (Date Range) */}
+                <div className="space-y-2 lg:col-span-1">
+                  <label className="text-xs font-bold text-slate-600 uppercase">
+                    วันที่สั่งผลิต (จาก - ถึง)
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      name="startDate"
+                      type="date"
+                      className="w-full px-2 py-2 bg-white border border-slate-300 rounded text-xs focus:border-blue-500 outline-none"
+                      onChange={handleInputChange}
+                    />
+                    <span className="text-slate-400 text-xs">-</span>
+                    <input
+                      name="endDate"
+                      type="date"
+                      className="w-full px-2 py-2 bg-white border border-slate-300 rounded text-xs focus:border-blue-500 outline-none"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                </div>
+
+                {/* เพิ่ม: ค้นหาตามสถานะ (Dropdown) */}
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-600 uppercase">
-                    วันที่สั่งผลิต
+                    สถานะ Job Order
                   </label>
-                  <input
-                    name="orderDate"
-                    value={tempSearch.orderDate}
+                  <select
+                    name="status"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 outline-none transition text-sm font-semibold cursor-pointer"
                     onChange={handleInputChange}
-                    type="text"
-                    placeholder="วว-ดด-ปปปป"
-                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm"
-                  />
+                  >
+                    <option value="">ทั้งหมด</option>
+                    <option value="in_production">กำลังผลิต</option>
+                    <option value="pending_material">รอเบิกวัตถุดิบ</option>
+                    <option value="material_issued">เบิกวัตถุดิบ</option>
+                  </select>
                 </div>
               </div>
+
               <div className="flex justify-end mt-6 space-x-2">
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold"
+                  className="px-6 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition text-sm font-bold active:scale-95"
                 >
                   ล้างค่า
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center space-x-2 px-6 py-2 bg-[#004a99] text-white rounded hover:bg-[#005580] transition shadow-sm text-sm font-bold"
+                  className="flex items-center space-x-2 px-8 py-2 bg-[#004a99] text-white rounded-lg hover:bg-blue-800 transition shadow-md text-sm font-bold active:scale-95"
                 >
                   <Search className="w-4 h-4" />
                   <span>ค้นหา</span>

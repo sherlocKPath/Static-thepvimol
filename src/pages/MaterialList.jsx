@@ -108,8 +108,8 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
             className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-200/50 transition-colors"
           >
             <div className="flex items-center space-x-2 text-slate-600 font-bold">
-              <Search className="w-4 h-4" />
-              <span className="text-sm font-bold">ค้นหาใบเบิก (Filter)</span>
+              <Search className="w-4 h-4 text-[#004a99]" />
+              <span className="text-sm font-bold">ค้นหารายการเบิก</span>
             </div>
             {isSearchExpanded ? (
               <ChevronUp className="w-4 h-4" />
@@ -117,21 +117,39 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
               <ChevronDown className="w-4 h-4" />
             )}
           </div>
+
           {isSearchExpanded && (
             <form
               onSubmit={handleSearchSubmit}
-              className="bg-white px-6 py-6 border-t border-slate-200 animate-in fade-in slide-in-from-top-1"
+              className="bg-white px-6 py-6 border-t border-slate-200 animate-in fade-in slide-in-from-top-1 duration-300"
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* 1. Job Order No. */}
                 <SearchField
-                  label="Job Order No."
+                  label="Job No."
                   name="jobNo"
                   value={tempSearch.jobNo}
                   onChange={(e) =>
                     setTempSearch({ ...tempSearch, jobNo: e.target.value })
                   }
-                  placeholder="Jxxx/xxxx"
+                  placeholder="ระบุเลขที่ Job"
                 />
+
+                {/* 2. รหัสสินค้า (เพิ่มใหม่) */}
+                <SearchField
+                  label="รหัสสินค้า"
+                  name="productCode"
+                  value={tempSearch.productCode}
+                  onChange={(e) =>
+                    setTempSearch({
+                      ...tempSearch,
+                      productCode: e.target.value,
+                    })
+                  }
+                  placeholder="ระบุรหัสสินค้า"
+                />
+
+                {/* 3. รหัสวัตถุดิบ */}
                 <SearchField
                   label="รหัสวัตถุดิบ"
                   name="matId"
@@ -141,30 +159,93 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
                   }
                   placeholder="รหัสวัตถุดิบ"
                 />
+
+                {/* 4. Lot No. (เพิ่มใหม่) */}
                 <SearchField
-                  label="วันที่ผลิตวัตถุดิบ"
-                  name="mfgDate"
-                  type="date"
-                  value={tempSearch.mfgDate}
+                  label="Lot No."
+                  name="lotNo"
+                  value={tempSearch.lotNo}
                   onChange={(e) =>
-                    setTempSearch({ ...tempSearch, mfgDate: e.target.value })
+                    setTempSearch({ ...tempSearch, lotNo: e.target.value })
                   }
+                  placeholder="ระบุหมายเลข Lot"
                 />
+
+                {/* 5. วันที่ผลิตวัตถุดิบ (ปรับเป็นช่วงวันที่ จาก-ถึง) */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-600 uppercase">
+                    วันที่ผลิตวัตถุดิบ (จาก - ถึง)
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="date"
+                      className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm font-semibold"
+                      value={tempSearch.startDate}
+                      onChange={(e) =>
+                        setTempSearch({
+                          ...tempSearch,
+                          startDate: e.target.value,
+                        })
+                      }
+                    />
+                    <span className="text-slate-400 text-xs">-</span>
+                    <input
+                      type="date"
+                      className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm font-semibold"
+                      value={tempSearch.endDate}
+                      onChange={(e) =>
+                        setTempSearch({
+                          ...tempSearch,
+                          endDate: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* 6. สถานะ (เพิ่มใหม่ - Dropdown) */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-slate-600 uppercase">
+                    สถานะ
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition text-sm font-semibold cursor-pointer"
+                    value={tempSearch.status}
+                    onChange={(e) =>
+                      setTempSearch({ ...tempSearch, status: e.target.value })
+                    }
+                  >
+                    <option value="">ทั้งหมด</option>
+                    <option value="in_production">กำลังผลิต</option>
+                    <option value="material_issued">เบิกวัตถุดิบ</option>
+                  </select>
+                </div>
               </div>
+
+              {/* ปุ่มควบคุม */}
               <div className="flex justify-end mt-6 space-x-2">
                 <button
                   type="button"
                   onClick={() => {
-                    setTempSearch({ jobNo: "", matId: "", mfgDate: "" });
-                    setSearchParams({ jobNo: "", matId: "", mfgDate: "" });
+                    const empty = {
+                      jobNo: "",
+                      productCode: "",
+                      matId: "",
+                      lotNo: "",
+                      startDate: "",
+                      endDate: "",
+                      status: "",
+                    };
+                    setTempSearch(empty);
+                    setSearchParams(empty);
                   }}
-                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold flex items-center"
+                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold flex items-center active:scale-95"
                 >
                   <RotateCcw className="w-4 h-4 mr-1" /> ล้างค่า
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center space-x-2 px-6 py-2 bg-[#004a99] text-white rounded hover:bg-[#005580] transition shadow-sm text-sm font-bold uppercase"
+                  className="flex items-center space-x-2 px-8 py-2 bg-[#004a99] text-white rounded hover:bg-blue-800 transition shadow-md text-sm font-bold active:scale-95 uppercase"
                 >
                   <Search className="w-4 h-4" /> <span>ค้นหา</span>
                 </button>

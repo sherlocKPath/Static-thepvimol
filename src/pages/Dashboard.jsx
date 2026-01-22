@@ -51,28 +51,28 @@ const Dashboard = ({ setCurrentPage, onEditMolding }) => {
               label="เบิกวัตถุดิบ"
               detail="Issue Raw Material"
               color="blue"
-              onClick={() => setCurrentPage("requisition")}
+              onClick={() => setCurrentPage("matlist")}
             />
             <ShortcutCard
               icon={<Settings size={22} />}
               label="บันทึกการขึ้นรูป"
               detail="Molding Entry"
               color="indigo"
-              onClick={() => setCurrentPage("production")}
+              onClick={() => setCurrentPage("molding")}
             />
             <ShortcutCard
               icon={<Scissors size={22} />}
               label="บันทึกการตัด"
               detail="Write-off Record"
               color="orange"
-              onClick={() => setCurrentPage("writeoff_form")}
+              onClick={() => setCurrentPage("writeoff")}
             />
             <ShortcutCard
               icon={<CheckSquare size={22} />}
               label="บันทึกการแกะสินค้า"
               detail="Product Unpack"
               color="emerald"
-              onClick={() => setCurrentPage("unpack_form")}
+              onClick={() => setCurrentPage("unpack")}
             />
             <ShortcutCard
               icon={<Warehouse size={22} />}
@@ -85,55 +85,62 @@ const Dashboard = ({ setCurrentPage, onEditMolding }) => {
         </div>
 
         {/* --- 3. Production Details & Quick Record Section --- */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          {/* ฝั่งซ้าย: Production Live Details (ลดขนาด Padding และช่องไฟ) */}
-          <div className="lg:col-span-2">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1">
-              Production Molding Live Details
+        <div className="mb-10">
+          <div className="flex justify-between items-center mb-4 ml-1">
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">
+              Production Molding Live
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <ProductionLiveCard
-                jobNo="104/0868"
-                productCode="PP-PL17 FB"
-                materialId="5B660055FB"
-                mfgDate="22/01/2569"
-                startTime="07:00"
-                endTime="19:00"
-                shift="A"
-                machine="MC-VF-1"
-                onClick={() =>
-                  onEditMolding({
-                    jobNo: "104/0868",
-                    productCode: "PP-PL17 FB",
-                  })
-                }
-              />
-              <ProductionLiveCard
-                jobNo="105/0868"
-                productCode="PP-PL18 BK"
-                materialId="5B660056BK"
-                mfgDate="22/01/2569"
-                startTime="19:00"
-                endTime="04:00"
-                shift="B"
-                machine="MC-VF-2"
-                onClick={() =>
-                  onEditMolding({
-                    jobNo: "105/0868",
-                    productCode: "PP-PL18 BK",
-                  })
-                }
-              />
-            </div>
           </div>
 
-          {/* ฝั่งขวา: Quick Action Cards (ย้ายมาแทน Machine Status) */}
-          <div className="flex flex-col h-full">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1">
-              Molding Quick Record
-            </h3>
-            <div className="grid grid-cols-1 gap-4 flex-1">
-              <QuickActionCard onAction={() => setCurrentPage("production")} />
+          {/* ปรับเป็น Grid 4 คอลัมน์เพื่อให้เรียงในแถวเดียวกันทั้งหมด */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 items-stretch">
+            {/* Card 1: J104 */}
+            <ProductionLiveCard
+              jobNo="104/0868"
+              productCode="PP-PL17 FB"
+              materialId="5B660055FB"
+              mfgDate="22/01/2569"
+              startTime="07:00"
+              endTime="19:00"
+              shift="A"
+              machine="MC-VF-1"
+              onClick={() =>
+                onEditMolding({ jobNo: "104/0868", productCode: "PP-PL17 FB" })
+              }
+            />
+
+            {/* Card 2: J105 */}
+            <ProductionLiveCard
+              jobNo="105/0868"
+              productCode="PP-PL18 BK"
+              materialId="5B660056BK"
+              mfgDate="22/01/2569"
+              startTime="19:00"
+              endTime="04:00"
+              shift="B"
+              machine="MC-VF-2"
+              onClick={() =>
+                onEditMolding({ jobNo: "105/0868", productCode: "PP-PL18 BK" })
+              }
+            />
+
+            {/* Card 3: J107 */}
+            <ProductionLiveCard
+              jobNo="107/0868"
+              productCode="PT-PL17 FB"
+              materialId="1L660040AN"
+              mfgDate="22/01/2569"
+              startTime="07:00"
+              endTime="20:00"
+              shift="A"
+              machine="MC-VF-3"
+              onClick={() =>
+                onEditMolding({ jobNo: "107/0868", productCode: "PT-PL17 FB" })
+              }
+            />
+
+            {/* Card 4: Quick Action (วางต่อท้ายในแถวเดียวกัน) */}
+            <div className="flex flex-col">
               <QuickActionCard onAction={() => setCurrentPage("production")} />
             </div>
           </div>
