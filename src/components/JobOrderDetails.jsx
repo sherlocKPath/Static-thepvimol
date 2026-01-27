@@ -12,7 +12,7 @@ const JobOrderDetail = ({ jobData, setCurrentPage }) => {
   // หากไม่มีข้อมูล ให้ใช้ Mock Data ตามรูปที่ 2
   const data = jobData || {
     id: "J104/0868",
-    date: "14/08/2568",
+    date: "14/08/2025",
     productCode: "TB-0000PL17-00",
     shortCode: "PL17",
     orderQty: "117,040",

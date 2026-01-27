@@ -18,7 +18,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL17-00",
       code: "PL17",
       qty: 50000,
-      date: "14-08-2568",
+      date: "14-08-2025",
       status: "กำลังผลิต",
     },
     {
@@ -26,7 +26,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL18-00",
       code: "PL18",
       qty: 25000,
-      date: "15-08-2568",
+      date: "15-08-2025",
       status: "รอเบิกวัตถุดิบ",
     },
     {
@@ -34,7 +34,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL19-00",
       code: "PL19",
       qty: 100000,
-      date: "16-08-2568",
+      date: "16-08-2025",
       status: "กำลังผลิต",
     },
     {
@@ -42,7 +42,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL20-00",
       code: "PL20",
       qty: 30000,
-      date: "17-08-2568",
+      date: "17-08-2025",
       status: "เบิกวัตถุดิบ",
     },
     {
@@ -50,7 +50,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL21-00",
       code: "PL21",
       qty: 15000,
-      date: "18-08-2568",
+      date: "18-08-2025",
       status: "รอเบิกวัตถุดิบ",
     },
     {
@@ -58,7 +58,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL22-00",
       code: "PL22",
       qty: 45000,
-      date: "19-08-2568",
+      date: "19-08-2025",
       status: "กำลังผลิต",
     },
     {
@@ -66,7 +66,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL23-00",
       code: "PL23",
       qty: 80000,
-      date: "20-08-2568",
+      date: "20-08-2025",
       status: "กำลังผลิต",
     },
     {
@@ -74,7 +74,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL24-00",
       code: "PL24",
       qty: 200000,
-      date: "21-08-2568",
+      date: "21-08-2025",
       status: "รอเบิกวัตถุดิบ",
     },
     {
@@ -82,7 +82,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL25-00",
       code: "PL25",
       qty: 300000,
-      date: "22-08-2568",
+      date: "22-08-2025",
       status: "เบิกวัตถุดิบ",
     },
     {
@@ -90,7 +90,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL26-00",
       code: "PL26",
       qty: 12000,
-      date: "23-08-2568",
+      date: "23-08-2025",
       status: "กำลังผลิต",
     },
     {
@@ -98,7 +98,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL27-00",
       code: "PL27",
       qty: 5000,
-      date: "24-08-2568",
+      date: "24-08-2025",
       status: "รอเบิกวัตถุดิบ",
     },
     {
@@ -106,7 +106,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
       product: "TB-0000PL28-00",
       code: "PL28",
       qty: 40000,
-      date: "25-08-2568",
+      date: "25-08-2025",
       status: "กำลังผลิต",
     },
   ]);

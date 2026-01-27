@@ -10,6 +10,7 @@ import ProductionReport from "./pages/ProductionReport";
 import ProductMolding from "./pages/ProductMolding";
 import ProductWriteoff from "./pages/ProductWriteoff";
 import ProductUnpack from "./pages/ProductUnpack";
+import ProductUnpackMgmt from "./pages/ProductUnpackMgmt";
 import UsersManagement from "./pages/UsersManagement";
 import RolesManagement from "./pages/RolesManagement";
 import PermissionSettings from "./components/PermissionSettings";
@@ -21,6 +22,10 @@ import WriteoffRecord from "./components/WriteoffRecord";
 import UnpackRecord from "./components/UnpackRecord";
 import MaterialDetail from "./components/MaterialsDetail";
 import MoldingDetail from "./components/MoldingDetails";
+import MasterMachines from "./pages/MasterMachines";
+import MasterItemPackSize from "./pages/MasterItemPackSize";
+import WarehouseInboundList from "./pages/WarehouseInboundList";
+import StaffManagement from "./pages/Staff";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("dashboard");
@@ -41,6 +46,7 @@ function App() {
   const [editingUser, setEditingUser] = useState(null);
   const [materialView, setMaterialView] = useState("list"); // "list" หรือ "detail"
   const [selectedRequisition, setSelectedRequisition] = useState(null);
+  const [selectedInboundDate, setSelectedInboundDate] = useState(null);
 
   const [requisitions, setRequisitions] = useState([
     {
@@ -48,7 +54,7 @@ function App() {
       jobOrderId: "J104/0868",
       materialId: "5B660055FB",
       lotNo: "110825",
-      mfgDate: "09-08-2568",
+      mfgDate: "09-08-2025",
       qty: 5,
       productCode: "PP-PL17",
       remark: "ด่วน",
@@ -58,7 +64,7 @@ function App() {
       jobOrderId: "J104/0868",
       materialId: "5B660055FB",
       lotNo: "150825",
-      mfgDate: "11-08-2568",
+      mfgDate: "11-08-2025",
       qty: 2,
       productCode: "PP-PL17",
       remark: "-",
@@ -68,7 +74,7 @@ function App() {
       jobOrderId: "J107/0868",
       materialId: "1L660040AN",
       lotNo: "130825",
-      mfgDate: "13-08-2568",
+      mfgDate: "13-08-2025",
       qty: 4,
       productCode: "PT-PL17",
       remark: "-",
@@ -134,6 +140,10 @@ function App() {
                 setCurrentPage={handleNavigate}
                 onEditMolding={handleEditMoldingFromDashboard}
               />
+            )}
+
+            {currentPage === "staff_mgmt" && (
+              <StaffManagement setCurrentPage={setCurrentPage} />
             )}
 
             {currentPage === "jobs" && (
@@ -228,8 +238,26 @@ function App() {
                 <UnpackRecord onBack={() => setUnpackView("list")} />
               ))}
 
+            {currentPage === "unpack_mgmt" && (
+              <ProductUnpackMgmt setCurrentPage={setCurrentPage} />
+            )}
+
             {currentPage === "warehouse" && (
-              <WarehouseInbound setCurrentPage={setCurrentPage} />
+              <WarehouseInbound
+                setCurrentPage={setCurrentPage}
+                inboundDate={selectedInboundDate} // ส่งวันที่ไปแสดงที่หัวตารางหน้า 17 ช่อง
+              />
+            )}
+
+            {currentPage === "warehouselist" && (
+              <WarehouseInboundList
+                setCurrentPage={setCurrentPage}
+                // 2. ส่งฟังก์ชันนี้เข้าไปเพื่อแก้ Error
+                onNavigateToDetail={(date) => {
+                  setSelectedInboundDate(date); // เก็บวันที่ไว้
+                  setCurrentPage("warehouse"); // เปลี่ยนหน้าไปหน้าตาราง 17 ช่อง
+                }}
+              />
             )}
             {currentPage === "reports" && (
               <ProductionReport setCurrentPage={setCurrentPage} />
@@ -265,6 +293,14 @@ function App() {
                   onBack={() => setCurrentRoleView("list")}
                 />
               ))}
+
+            {currentPage === "master_machines" && (
+              <MasterMachines setCurrentPage={setCurrentPage} />
+            )}
+
+            {currentPage === "master_packsize" && (
+              <MasterItemPackSize setCurrentPage={setCurrentPage} />
+            )}
           </div>
         </main>
       </div>

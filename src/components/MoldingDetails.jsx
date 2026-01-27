@@ -17,6 +17,7 @@ import {
   Edit,
   Edit3,
   X,
+  Calendar,
 } from "lucide-react";
 
 const MoldingDetail = ({ moldingData, onBack }) => {
@@ -27,6 +28,13 @@ const MoldingDetail = ({ moldingData, onBack }) => {
   const [heightSets, setHeightSets] = useState([
     98, 98, 98, 98, 98, 98, 98, 98, 98, 98,
   ]);
+  const [expandedGroups, setExpandedGroups] = useState({});
+  const toggleGroup = (groupKey) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [groupKey]: !prev[groupKey],
+    }));
+  };
 
   // คำนวณสถิติความสูงจาก Array ปัจจุบัน
   const heightStats = useMemo(() => {
@@ -72,7 +80,6 @@ const MoldingDetail = ({ moldingData, onBack }) => {
       outputB: 1,
       scrap: 0,
       total: 619,
-      status: "Complete",
     },
     {
       id: 2,
@@ -87,21 +94,60 @@ const MoldingDetail = ({ moldingData, onBack }) => {
       outputB: 1,
       scrap: 0,
       total: 615,
-      status: "Complete",
+    },
+    {
+      id: 3,
+      rollNo: 3,
+      lotNo: "130825",
+      seq: 10,
+      mfgDate: "11-08-25",
+      weight: 210.0,
+      thicknessBefore: 0.58,
+      thicknessAfter: 0.52,
+      outputA: 620,
+      outputB: 0,
+      scrap: 2,
+      total: 622,
+    },
+    {
+      id: 4,
+      rollNo: 4,
+      lotNo: "130825",
+      seq: 11,
+      mfgDate: "11-08-25",
+      weight: 208.5,
+      thicknessBefore: 0.58,
+      thicknessAfter: 0.52,
+      outputA: 615,
+      outputB: 2,
+      scrap: 1,
+      total: 618,
     },
   ]);
-  // const totals = useMemo(() => {
-  //   return productionRolls.reduce(
-  //     (acc, roll) => ({
-  //       outputA: acc.outputA + roll.outputA,
-  //       outputB: acc.outputB + roll.outputB,
-  //       scrap: acc.scrap + roll.scrap,
-  //       total: acc.total + roll.total,
-  //       weight: acc.weight + roll.weight,
-  //     }),
-  //     { outputA: 0, outputB: 0, scrap: 0, total: 0, weight: 0 },
-  //   );
-  // }, [productionRolls]);
+
+  // 2. จัดกลุ่มข้อมูลตาม Lot No. และวันที่ผลิต
+  const groupedRolls = useMemo(() => {
+    const groups = productionRolls.reduce((acc, roll) => {
+      const key = `${roll.lotNo}-${roll.mfgDate}`;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(roll);
+      return acc;
+    }, {});
+    return Object.entries(groups);
+  }, [productionRolls]);
+
+  const totals = useMemo(() => {
+    return productionRolls.reduce(
+      (acc, roll) => ({
+        outputA: acc.outputA + roll.outputA,
+        outputB: acc.outputB + roll.outputB,
+        scrap: acc.scrap + roll.scrap,
+        total: acc.total + roll.total,
+        weight: acc.weight + roll.weight,
+      }),
+      { outputA: 0, outputB: 0, scrap: 0, total: 0, weight: 0 },
+    );
+  }, [productionRolls]);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] font-sans pb-20 text-slate-800">
@@ -261,191 +307,283 @@ const MoldingDetail = ({ moldingData, onBack }) => {
           </InfoCard> */}
         </div>
 
-        {/* --- 3. PRODUCTION TABLE (ROLL BY ROLL) --- */}
+        {/* --- 3. PRODUCTION TABLE WITH GROUPING --- */}
         <div className="mb-10">
           <div className="flex justify-between items-end mb-6 px-2">
             <div>
-              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight flex items-center">
+              <h3 className="text-xl font-black text-slate-800 uppercase flex items-center">
                 <Activity size={24} className="mr-2 text-indigo-600" />{" "}
                 รายละเอียดผลการขึ้นรูปรายม้วน
               </h3>
-              <p className="text-xs font-bold text-slate-400 mt-1 italic">
-                ตรวจสอบข้อมูลดิบ น้ำหนักม้วน และ QC แต่ละ Roll
+              <p className="text-xs font-bold text-slate-400 mt-1 italic tracking-tight">
+                แยกแสดงผลตามล็อตการผลิต (Lot Grouping)
               </p>
             </div>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center space-x-2 px-6 py-3 bg-[#004a99] text-white rounded-2xl font-black text-xs hover:bg-blue-800 transition-all shadow-xl active:scale-95 border-b-4 border-blue-900"
+              className="px-6 py-3 bg-[#004a99] text-white rounded-2xl font-black text-xs hover:bg-blue-800 shadow-xl border-b-4 border-blue-900 flex items-center space-x-2"
             >
               <Plus size={18} /> <span>เพิ่มข้อมูลม้วนใหม่</span>
             </button>
           </div>
 
-          <div className="bg-white rounded-4xl shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+          <div className="bg-white rounded-4xl shadow-2xl border border-slate-100 overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#f1f3f5] border-b border-slate-300">
                 <tr className="text-[10px] font-black uppercase tracking-widest text-slate-600 divide-x divide-slate-200">
                   <th className="px-6 py-4 text-center w-28">Tool</th>
                   <th className="px-4 py-4 text-center w-20">ม้วนที่</th>
                   <th className="px-6 py-4">Lot-No / Seq</th>
-                  <th className="px-6 py-4 text-center">น.น. ม้วน (kg)</th>
+                  <th className="px-6 py-4 text-center">น.น. (kg)</th>
                   <th className="px-6 py-4 text-center">ความหนา (ก/ห)</th>
+                  <th className="px-6 py-4 text-center">วันที่ผลิต</th>
                   <th className="px-6 py-4 text-center">ผลผลิต A</th>
                   <th className="px-6 py-4 text-center">ผลผลิต B</th>
                   <th className="px-6 py-4 text-center">เสีย</th>
                   <th className="px-6 py-4 text-center">รวม (Pcs)</th>
-                  <th className="px-6 py-4 text-center">ค่าอื่นๆ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-sm">
-                {productionRolls.map((roll) => (
-                  <React.Fragment key={roll.id}>
-                    <tr
-                      className={`hover:bg-indigo-50/30 transition-colors divide-x divide-slate-100 ${expandedRoll === roll.id ? "bg-indigo-50/50" : ""}`}
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-center space-x-2">
-                          <button
-                            onClick={() =>
-                              setExpandedRoll(
-                                expandedRoll === roll.id ? null : roll.id,
-                              )
-                            }
-                            className="p-2 bg-white text-slate-400 rounded-lg hover:text-indigo-600 border border-slate-100 shadow-sm"
-                          >
-                            {expandedRoll === roll.id ? (
-                              <ChevronUp size={16} />
-                            ) : (
-                              <Maximize2 size={16} />
-                            )}
-                          </button>
-                          <button className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all active:scale-90 shadow-sm">
-                            <Edit2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 text-center font-black text-slate-400">
-                        #{roll.rollNo}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="font-bold text-slate-800">
-                          {roll.lotNo}
-                        </div>
-                        <div className="text-[10px] text-slate-400 font-bold uppercase italic">
-                          Sequence: {roll.seq}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-center font-bold text-blue-700 bg-blue-50/30">
-                        {roll.weight}
-                      </td>
-                      <td className="px-6 py-4 text-center text-slate-500 font-medium">
-                        {roll.thicknessBefore} / {roll.thicknessAfter}
-                      </td>
-                      <td className="px-6 py-4 text-center font-black text-emerald-600 text-base">
-                        {roll.outputA}
-                      </td>
-                      <td className="px-6 py-4 text-center font-black text-orange-600 text-base">
-                        {roll.outputB}
-                      </td>
-                      <td className="px-6 py-4 text-center font-black text-slate-600 text-base">
-                        {roll.scrap}
-                      </td>
-                      <td className="px-6 py-4 text-center font-black text-slate-800">
-                        {roll.total}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => {
-                            /* ใส่ฟังก์ชันสำหรับเปิดดูข้อมูลละเอียดตรงนี้ เช่น เปิด Modal */
-                            console.log(
-                              "Viewing detailed data for roll ID:",
-                              roll.id,
-                            );
-                          }}
-                          className="text-slate-600 font-bold hover:text-blue-600 transition-colors underline decoration-1 underline-offset-4 decoration-slate-400 hover:decoration-blue-600"
-                        >
-                          View
-                        </button>
-                        {/* <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-tighter border border-emerald-200">
-                          {roll.status}
-                        </span> */}
-                      </td>
-                    </tr>
+                {groupedRolls.map(([groupKey, rolls]) => {
+                  const groupOutputA = rolls.reduce(
+                    (sum, r) => sum + r.outputA,
+                    0,
+                  );
+                  const groupOutputB = rolls.reduce(
+                    (sum, r) => sum + r.outputB,
+                    0,
+                  );
+                  const groupScrap = rolls.reduce((sum, r) => sum + r.scrap, 0);
+                  const groupTotal = rolls.reduce((sum, r) => sum + r.total, 0);
+                  const groupWeight = rolls.reduce(
+                    (sum, r) => sum + r.weight,
+                    0,
+                  );
 
-                    {/* Expandable QC Section (อ้างอิงจากใบ QC ในรูป) */}
-                    {expandedRoll === roll.id && (
-                      <tr>
-                        <td
-                          colSpan="8"
-                          className="px-10 py-6 bg-slate-50/50 border-y border-indigo-100"
-                        >
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-top-2 duration-300">
-                            <div className="space-y-4">
-                              <h4 className="text-xs font-black text-indigo-700 uppercase flex items-center">
-                                <AlertTriangle size={14} className="mr-2" />{" "}
-                                ปัญหาที่พบระหว่างกระบวนการ (QC Check)
-                              </h4>
-                              <div className="grid grid-cols-2 gap-2">
-                                <QCBadge label="เป็นรอยยับ" checked={false} />
-                                <QCBadge label="ม้วนโฟมติด" checked={true} />
-                                <QCBadge
-                                  label="พบสิ่งแปลกปลอม"
-                                  checked={true}
-                                />
-                                <QCBadge label="ปิดฝาไม่ได้" checked={false} />
+                  const isExpanded = expandedGroups[groupKey] !== false;
+
+                  return (
+                    <React.Fragment key={groupKey}>
+                      {/* 1. Lot Header (แถบสีม่วงของกลุ่ม) */}
+                      <tr
+                        onClick={() => toggleGroup(groupKey)}
+                        className="bg-indigo-50/50 border-y border-indigo-100/50 cursor-pointer hover:bg-indigo-100/50 transition-colors"
+                      >
+                        <td colSpan="10" className="px-6 py-2.5">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              <div className="flex items-center space-x-2 bg-indigo-600 px-3 py-1 rounded-lg text-white font-black text-[10px] uppercase shadow-sm">
+                                <Package size={12} />{" "}
+                                <span>LOT: {rolls[0].lotNo}</span>
+                              </div>
+                              <div className="text-[11px] font-bold text-slate-500 flex items-center">
+                                <Calendar
+                                  size={14}
+                                  className="mr-1 opacity-50"
+                                />{" "}
+                                {rolls[0].mfgDate}
                               </div>
                             </div>
-                            {/* <div className="bg-white p-4 rounded-2xl border border-indigo-100 shadow-inner">
-                              <h4 className="text-xs font-black text-slate-400 uppercase mb-2">
-                                Internal Remarks for Roll #{roll.rollNo}
-                              </h4>
-                              <p className="text-sm font-bold text-slate-600 italic">
-                                "ความหนาช่วงท้ายม้วนมีความแกว่งเล็กน้อย (0.48 -
-                                0.52) ฝ่ายตัดกรุณาตรวจสอบหน้ากว้างให้แม่นยำ"
-                              </p>
-                            </div> */}
+                            {isExpanded ? (
+                              <ChevronUp
+                                size={16}
+                                className="text-indigo-400"
+                              />
+                            ) : (
+                              <ChevronDown
+                                size={16}
+                                className="text-indigo-400"
+                              />
+                            )}
                           </div>
                         </td>
                       </tr>
-                    )}
-                  </React.Fragment>
-                ))}
+
+                      {/* 2. รายการม้วนและ QC Section (แสดงเมื่อกลุ่มถูกขยาย) */}
+                      {isExpanded && (
+                        <>
+                          {rolls.map((roll) => (
+                            <React.Fragment key={roll.id}>
+                              {/* แถวข้อมูลม้วนปกติ */}
+                              <tr
+                                className={`hover:bg-blue-50/30 divide-x divide-slate-100 transition-colors ${expandedRoll === roll.id ? "bg-indigo-50/50" : ""}`}
+                              >
+                                <td className="px-6 py-4 text-center">
+                                  <div className="flex justify-center space-x-2">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setExpandedRoll(
+                                          expandedRoll === roll.id
+                                            ? null
+                                            : roll.id,
+                                        );
+                                      }}
+                                      className="p-2 bg-white text-slate-400 rounded-lg hover:text-indigo-600 border border-slate-100 shadow-sm"
+                                    >
+                                      {expandedRoll === roll.id ? (
+                                        <ChevronUp size={16} />
+                                      ) : (
+                                        <Maximize2 size={16} />
+                                      )}
+                                    </button>
+                                    <button className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all active:scale-90">
+                                      <Edit2 size={14} />
+                                    </button>
+                                  </div>
+                                </td>
+                                <td className="px-4 py-4 text-center font-black text-slate-400">
+                                  #{roll.rollNo}
+                                </td>
+                                <td className="px-6 py-4">
+                                  <div className="font-bold text-slate-800">
+                                    {roll.lotNo}
+                                  </div>
+                                  <div className="text-[10px] text-slate-400 font-bold uppercase italic">
+                                    Seq: {roll.seq}
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 text-center font-bold text-blue-700 bg-blue-50/20">
+                                  {roll.weight}
+                                </td>
+                                <td className="px-6 py-4 text-center text-slate-500 font-medium">
+                                  {roll.thicknessBefore} / {roll.thicknessAfter}
+                                </td>
+                                <td className="px-6 py-4 text-center font-bold text-slate-400 italic">
+                                  {roll.mfgDate}
+                                </td>
+                                <td className="px-6 py-4 text-center font-black text-emerald-600 text-base">
+                                  {roll.outputA}
+                                </td>
+                                <td className="px-6 py-4 text-center font-black text-orange-600 text-base">
+                                  {roll.outputB}
+                                </td>
+                                <td className="px-6 py-4 text-center font-black text-slate-600 text-base">
+                                  {roll.scrap}
+                                </td>
+                                <td className="px-6 py-4 text-center font-black text-slate-800 bg-slate-50/30">
+                                  {roll.total}
+                                </td>
+                              </tr>
+
+                              {/* แถวรายละเอียด QC (แสดงเมื่อกดขยายรายม้วน) */}
+                              {expandedRoll === roll.id && (
+                                <tr>
+                                  <td
+                                    colSpan="10"
+                                    className="px-10 py-6 bg-slate-50/80 border-y border-indigo-100"
+                                  >
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-top-2 duration-300">
+                                      <div className="space-y-4">
+                                        <h4 className="text-xs font-black text-indigo-700 uppercase flex items-center">
+                                          <AlertTriangle
+                                            size={14}
+                                            className="mr-2"
+                                          />{" "}
+                                          ปัญหาที่พบระหว่างกระบวนการ (QC Check)
+                                          ของม้วน #{roll.rollNo}
+                                        </h4>
+                                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                                          <QCBadge
+                                            label="หน้ากว้างไม่เท่า"
+                                            checked={false}
+                                          />
+                                          <QCBadge
+                                            label="เป็นรอยยับ"
+                                            checked={true}
+                                          />
+                                          <QCBadge
+                                            label="ม้วนโฟมติด"
+                                            checked={false}
+                                          />
+                                          <QCBadge
+                                            label="สีมีปัญหา"
+                                            checked={false}
+                                          />
+                                          <QCBadge
+                                            label="ฟิล์มมีรอยยับ"
+                                            checked={false}
+                                          />
+                                          <QCBadge
+                                            label="พบสิ่งแปลกปลอม"
+                                            checked={true}
+                                          />
+                                        </div>
+                                      </div>
+                                      {/* <div className="bg-white p-5 rounded-2xl border border-indigo-100 shadow-inner flex flex-col justify-center">
+                                        <h4 className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">
+                                          Internal Remarks
+                                        </h4>
+                                        <p className="text-sm font-bold text-slate-600 italic">
+                                          "ม้วนนี้พบปัญหาฟิล์มยับในช่วง 10
+                                          เมตรแรก ทำการคัดแยกเกรด B
+                                          เรียบร้อยแล้ว"
+                                        </p>
+                                      </div> */}
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
+                          ))}
+
+                          {/* 3. แถวสรุปยอดของกลุ่ม Lot (Subtotal) */}
+                          <tr className="bg-slate-50 font-black border-b-2 border-slate-200">
+                            <td
+                              colSpan="3"
+                              className="px-6 py-3 text-right text-[10px] text-slate-400 uppercase tracking-tighter"
+                            >
+                              Subtotal (Lot {rolls[0].lotNo})
+                            </td>
+                            <td className="px-6 py-3 text-center text-blue-800 font-black">
+                              {groupWeight.toFixed(1)}
+                            </td>
+                            <td colSpan="2" className="bg-slate-100/50"></td>
+                            <td className="px-6 py-3 text-center text-emerald-600 text-sm border-x border-slate-200">
+                              {groupOutputA.toLocaleString()}
+                            </td>
+                            <td className="px-6 py-3 text-center text-orange-600 text-sm border-x border-slate-200">
+                              {groupOutputB.toLocaleString()}
+                            </td>
+                            <td className="px-6 py-3 text-center text-slate-500 text-sm border-x border-slate-200">
+                              {groupScrap.toLocaleString()}
+                            </td>
+                            <td className="px-6 py-3 text-center text-slate-900 text-sm bg-indigo-50/50">
+                              {groupTotal.toLocaleString()}
+                            </td>
+                          </tr>
+                        </>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </tbody>
 
-              {/* --- เพิ่มแถวผลรวมสะสมตามใบงานจริง (image_11ade9) --- */}
-              <tfoot className="bg-[#f8fafc] border-t-4 border-slate-300 font-black">
-                <tr className="divide-x divide-slate-200">
+              {/* --- ผลรวมทั้งหมดท้ายตาราง --- */}
+              <tfoot className="bg-slate-800 text-white border-t-4 border-slate-900">
+                <tr className="divide-x divide-slate-700">
                   <td
                     colSpan="3"
-                    className="px-8 py-5 text-center font-black text-slate-500 uppercase tracking-widest text-[11px]"
+                    className="px-8 py-5 text-right font-black uppercase text-[11px] tracking-widest text-slate-400"
                   >
-                    รวม <br />
-                    <span className="text-[9px] lowercase font-bold opacity-60">
-                      (นน. และความหนาเป็นค่าเฉลี่ย)
-                    </span>
+                    Total All Lots Summation
                   </td>
-                  {/* ค่าเฉลี่ยน้ำหนัก */}
-                  <td className="px-6 py-5 text-center text-blue-700 text-base bg-blue-50/30">
-                    206
+                  <td className="px-6 py-5 text-center text-blue-400 text-lg font-black">
+                    {totals.weight.toFixed(1)}
                   </td>
-                  {/* ช่องความหนาเฉลี่ย (ว่างไว้หรือแสดงค่ากลาง) */}
-                  <td className="px-6 py-5 text-center text-slate-400 italic">
-                    0.55 / 0.5
+                  <td colSpan="2" className="bg-slate-900/50"></td>
+                  <td className="px-6 py-5 text-center text-emerald-400 text-xl font-black">
+                    {totals.outputA.toLocaleString()}
                   </td>
-                  {/* ผลรวมสะสม A, B, เสีย, รวม Pcs */}
-                  <td className="px-6 py-5 text-center text-emerald-700 text-lg bg-emerald-50/30">
-                    1,232
+                  <td className="px-6 py-5 text-center text-orange-400 text-xl font-black">
+                    {totals.outputB.toLocaleString()}
                   </td>
-                  <td className="px-6 py-5 text-center text-orange-700 text-lg bg-orange-50/30">
-                    2
+                  <td className="px-6 py-5 text-center text-red-400 text-xl font-black">
+                    {totals.scrap.toLocaleString()}
                   </td>
-                  <td className="px-6 py-5 text-center text-slate-700 text-lg bg-red-50/30">
-                    0
+                  <td className="px-6 py-5 text-center bg-indigo-600 text-white text-xl font-black">
+                    {totals.total.toLocaleString()}
                   </td>
-                  <td className="px-6 py-5 text-center bg-slate-100 text-slate-900 text-lg">
-                    1,234
-                  </td>
-                  <td className="bg-slate-50"></td>
                 </tr>
               </tfoot>
             </table>

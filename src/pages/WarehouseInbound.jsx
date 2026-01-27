@@ -1,276 +1,310 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
-  Save,
-  Warehouse,
-  Hash,
+  Search,
+  Plus,
   Package,
-  Archive,
-  Calculator,
-  ArrowRightCircle,
   ChevronLeft,
-  Boxes,
-  MapPin,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  Edit2,
+  Trash2,
+  X,
+  Save,
+  Database,
+  Activity,
 } from "lucide-react";
 
-const WarehouseInbound = ({ setCurrentPage }) => {
-  const [formData, setFormData] = useState({
-    date: new Date().toISOString().split("T")[0],
-    productCode: "",
-    jobNo: "",
-    storageA: "",
-    storageSeq: "",
-    totalBoxes: 0,
-    scrap: 0,
-    pcsPerBox: 0,
-    totalPcs: 0,
-  });
+const WarehouseInbound = ({ setCurrentPage, inboundDate }) => {
+  // ข้อมูลจำลอง
+  const [inboundRecords] = useState([
+    {
+      id: 1,
+      productCode: "TB-0000PL17-00 ถาด",
+      jobNo: "104/0868",
+      location: "A",
+      slots: [
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 252,
+      ],
+      pcsPerBox: 140,
+    },
+  ]);
 
-  // ฟังก์ชันคำนวณจำนวนชิ้นอัตโนมัติ (จำนวนกล่อง * ชิ้น/กล่อง + เศษ)
-  const calculateTotal = (boxes, pbox, scrap) => {
-    return Number(boxes) * Number(pbox) + Number(scrap);
-  };
+  const [showModal, setShowModal] = useState(false);
+  // const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => {
-      const newData = { ...prev, [name]: value };
-      if (["totalBoxes", "pcsPerBox", "scrap"].includes(name)) {
-        newData.totalPcs = calculateTotal(
-          newData.totalBoxes,
-          newData.pcsPerBox,
-          newData.scrap
-        );
-      }
-      return newData;
-    });
-  };
+  // คำนวณผลรวมสะสมท้ายตาราง
+  const grandTotals = useMemo(() => {
+    return inboundRecords.reduce(
+      (acc, row) => {
+        const rowSum = row.slots.reduce((s, v) => s + (Number(v) || 0), 0);
+        const rowTotalPcs = rowSum * row.pcsPerBox;
+        return { qty: acc.qty + rowSum, pcs: acc.pcs + rowTotalPcs };
+      },
+      { qty: 0, pcs: 0 },
+    );
+  }, [inboundRecords]);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-20 font-sans text-slate-800">
-      <div className="max-w-5xl mx-auto p-4 md:p-8 animate-in fade-in duration-500">
-        {/* --- Header Section --- */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <button
-            onClick={() => setCurrentPage("dashboard")}
-            className="group flex items-center text-slate-500 hover:text-[#004a99] transition-all font-black uppercase text-xs tracking-widest"
-          >
-            <div className="mr-3 p-2 bg-white border border-slate-200 rounded-xl group-hover:border-[#004a99] shadow-sm">
-              <ChevronLeft size={18} />
-            </div>
-            Back to Dashboard
-          </button>
-          <div className="text-right">
-            <h2 className="text-3xl font-black text-slate-800 uppercase tracking-tight flex items-center justify-end">
-              <Warehouse className="mr-3 text-[#004a99]" size={32} />
-              บันทึกการส่งสินค้าเข้าคลัง
-            </h2>
-            <p className="text-sm font-bold text-blue-600 italic">
-              Finished Goods (FG) Inbound Entry
+    <div className="min-h-screen bg-[#f8f9fa] font-sans">
+      {/* --- 1. TOP HEADER BAR (เหมือนหน้า Molding Detail) --- */}
+      <div className="bg-white border-b border-slate-200 px-8 py-5 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <div className="flex items-center space-x-4">
+          <div className="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-200">
+            <Database size={20} />
+          </div>
+          <div>
+            <h1 className="text-xl font-black text-slate-800 tracking-tight leading-none uppercase">
+              สินค้าส่งเข้าคลังประจำวันที่ :{" "}
+              <span className="text-indigo-700">
+                {/* ตรวจสอบและแปลงรูปแบบวันที่เป็น DD/MM/YYYY */}
+                {inboundDate
+                  ? new Date(inboundDate).toLocaleDateString("en-GB")
+                  : "16/08/2025"}
+              </span>
+            </h1>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 italic">
+              Daily Warehouse Inbound Transaction Record
             </p>
           </div>
         </div>
 
-        <form className="space-y-6">
-          {/* ส่วนที่ 1: ข้อมูลอ้างอิงการผลิต */}
-          <div className="bg-white p-8 rounded-4xl shadow-xl shadow-slate-200/50 border border-slate-100">
-            <h3 className="text-lg font-black text-slate-800 mb-6 flex items-center border-b border-slate-50 pb-4 uppercase tracking-tight">
-              <Package className="w-6 h-6 mr-3 text-blue-600" /> 1.
-              ข้อมูลอ้างอิงการผลิต
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <InputField
-                label="วันที่ส่งเข้าคลัง"
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-              />
-              <InputField
-                label="Job No."
-                type="text"
-                name="jobNo"
-                placeholder="ระบุเลขที่ Job"
-                value={formData.jobNo}
-                onChange={handleChange}
-                className="text-blue-700 font-bold"
-              />
-              <InputField
-                label="รหัสสินค้า (Product Code)"
-                type="text"
-                name="productCode"
-                placeholder="ระบุรหัสสินค้า"
-                value={formData.productCode}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          {/* ส่วนที่ 2: ตำแหน่งจัดเก็บ */}
-          <div className="bg-white p-8 rounded-4xl shadow-xl shadow-slate-200/50 border border-slate-100">
-            <h3 className="text-lg font-black text-slate-800 mb-6 flex items-center border-b border-slate-50 pb-4 uppercase tracking-tight">
-              <MapPin className="w-6 h-6 mr-3 text-red-500" /> 2.
-              ระบุตำแหน่งจัดเก็บ
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="flex items-center space-x-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <div className="bg-[#004a99] p-4 rounded-xl text-white shadow-lg">
-                  <Archive className="w-6 h-6" />
-                </div>
-                <div className="flex-1">
-                  <InputField
-                    label="ที่จัดเก็บ A"
-                    type="text"
-                    name="storageA"
-                    placeholder="เช่น โซน A / ชั้น 2"
-                    value={formData.storageA}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-              <div className="flex items-center space-x-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                <div className="bg-yellow-400 p-4 rounded-xl text-[#001d3d] shadow-lg">
-                  <Hash className="w-6 h-6" />
-                </div>
-                <div className="flex-1">
-                  <InputField
-                    label="ลำดับที่จัดเก็บ (Seq)"
-                    type="number"
-                    name="storageSeq"
-                    placeholder="ระบุลำดับ"
-                    value={formData.storageSeq}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ส่วนที่ 3: รายละเอียดจำนวนสินค้าและการคำนวณ */}
-          <div className="bg-white p-8 rounded-4xl shadow-xl shadow-slate-200/50 border border-slate-100">
-            <h3 className="text-lg font-black text-slate-800 mb-8 flex items-center uppercase tracking-tight">
-              <Calculator className="w-6 h-6 mr-3 text-indigo-600" /> 3.
-              คำนวณปริมาณสินค้าส่งมอบ
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  ยอดรวมทั้งหมด (กล่อง)
-                </label>
-                <input
-                  type="number"
-                  name="totalBoxes"
-                  className="w-full text-4xl font-black p-5 bg-slate-50 border-2 border-slate-200 rounded-3xl focus:border-blue-500 focus:bg-white outline-none transition-all text-[#004a99]"
-                  value={formData.totalBoxes}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  จำนวนชิ้น / กล่อง
-                </label>
-                <input
-                  type="number"
-                  name="pcsPerBox"
-                  className="w-full text-4xl font-black p-5 bg-slate-50 border-2 border-slate-200 rounded-3xl focus:border-blue-500 focus:bg-white outline-none transition-all text-slate-700"
-                  value={formData.pcsPerBox}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-orange-400 uppercase tracking-widest ml-1">
-                  ยอดรวมเศษ (ชิ้น)
-                </label>
-                <input
-                  type="number"
-                  name="scrap"
-                  className="w-full text-4xl font-black p-5 bg-orange-50 border-2 border-orange-200 rounded-3xl focus:border-orange-500 focus:bg-white outline-none transition-all text-orange-700 shadow-inner"
-                  value={formData.scrap}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* ส่วนสรุปผลลัพธ์ (Grand Total Visual) */}
-            <div className="bg-[#001d3d] rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden ring-8 ring-blue-50">
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-center items-center">
-                <div>
-                  <p className="text-blue-300 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
-                    Total Pack Units
-                  </p>
-                  <p className="text-4xl font-black">
-                    {formData.totalBoxes.toLocaleString()}{" "}
-                    <span className="text-xl font-bold text-blue-400">
-                      Boxes
-                    </span>
-                  </p>
-                </div>
-                <div className="border-white/10 md:border-x px-4">
-                  <p className="text-orange-300 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
-                    Total Loose Units
-                  </p>
-                  <p className="text-4xl font-black">
-                    {formData.scrap.toLocaleString()}{" "}
-                    <span className="text-xl font-bold text-orange-400">
-                      Pcs
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <p className="text-yellow-400 text-xs font-black uppercase tracking-[0.3em] mb-2">
-                    Grand Total Sum
-                  </p>
-                  <div className="flex flex-col items-center">
-                    <p className="text-6xl font-black text-yellow-400 drop-shadow-[0_4px_10px_rgba(250,204,21,0.3)]">
-                      {formData.totalPcs.toLocaleString()}
-                    </p>
-                    <p className="text-sm font-bold text-yellow-500 mt-1 uppercase">
-                      Total Pieces in Stock
-                    </p>
-                  </div>
-                </div>
-              </div>
-              {/* Background Decoration */}
-              <div className="absolute -right-16 -bottom-16 opacity-5 rotate-12">
-                <Boxes className="w-72 h-72" />
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="w-full bg-[#004a99] hover:bg-blue-800 text-white py-7 rounded-4xl font-black text-2xl shadow-2xl shadow-blue-200 flex items-center justify-center space-x-4 transition-all transform active:scale-[0.98] border-b-8 border-blue-900 cursor-pointer"
-          >
-            <Save className="w-8 h-8" />
-            <span>บันทึกและส่งเข้าคลังสำเร็จรูป (CONFIRM FG)</span>
-          </button>
-        </form>
+        <button
+          onClick={() => setCurrentPage("warehouselist")}
+          className="flex items-center space-x-2 px-6 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 shadow-sm active:scale-95 uppercase tracking-widest text-[11px]"
+        >
+          <ChevronLeft size={16} /> <span>Back To List</span>
+        </button>
       </div>
+
+      <main className="p-4 md:p-6 max-w-400 mx-auto animate-in fade-in duration-500">
+        {/* --- 2. ACTION BUTTON AREA --- */}
+        <div className="flex justify-end mb-6">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-8 py-3 rounded-2xl shadow-xl transition-all font-black text-xs active:scale-95 border-b-4 border-blue-900 uppercase tracking-wider"
+          >
+            <Plus className="w-5 h-5" />
+            <span>เพิ่มรายการสินค้า</span>
+          </button>
+        </div>
+
+        {/* --- 3. TABLE SECTION --- */}
+        <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-300">
+              <thead className="bg-[#f1f3f5] border-b border-slate-300 font-bold">
+                <tr className="divide-x divide-slate-200 text-slate-600">
+                  <th className="px-3 py-4 text-[10px] text-center uppercase w-16">
+                    ลำดับที่
+                  </th>
+                  <th className="px-4 py-4 text-[10px] uppercase w-48">
+                    รหัสสินค้า
+                  </th>
+                  <th className="px-4 py-4 text-[10px] text-center uppercase w-28">
+                    JOB NO.
+                  </th>
+                  <th className="px-4 py-4 text-[10px] text-center uppercase w-20">
+                    ที่จัดเก็บ
+                  </th>
+                  {Array.from({ length: 17 }, (_, i) => (
+                    <th
+                      key={i}
+                      className="p-1 text-[9px] text-center uppercase w-10"
+                    >
+                      {i + 1}
+                    </th>
+                  ))}
+                  <th className="px-4 py-4 text-[10px] text-center uppercase w-24">
+                    รวมยอด
+                  </th>
+                  <th className="px-4 py-4 text-[10px] text-center uppercase w-16">
+                    เศษ
+                  </th>
+                  <th className="px-4 py-4 text-[10px] text-center uppercase w-24">
+                    ชิ้น/กล่อง
+                  </th>
+                  <th className="px-4 py-4 text-[10px] text-center uppercase w-32 font-black text-blue-800 bg-blue-50/30 border-l-2 border-blue-200">
+                    จำนวนชิ้น
+                  </th>
+                  <th className="px-4 py-4 text-[10px] text-center uppercase w-20">
+                    Tools
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 text-sm font-bold">
+                {inboundRecords.map((row) => {
+                  const rowSum = row.slots.reduce(
+                    (a, b) => a + (Number(b) || 0),
+                    0,
+                  );
+                  const rowTotalPcs = rowSum * row.pcsPerBox;
+                  return (
+                    <tr
+                      key={row.id}
+                      className="hover:bg-blue-50/20 transition-colors divide-x divide-slate-100"
+                    >
+                      <td className="px-3 py-4 text-center text-slate-400 font-medium">
+                        #{row.id}
+                      </td>
+                      <td className="px-4 py-4 text-slate-700">
+                        {row.productCode}
+                      </td>
+                      <td className="px-4 py-4 text-center text-blue-700">
+                        {row.jobNo}
+                      </td>
+                      <td className="px-4 py-4 text-center text-slate-500">
+                        {row.location}
+                      </td>
+                      {row.slots.map((val, i) => (
+                        <td
+                          key={i}
+                          className={`p-1 text-center text-xs ${val ? "text-slate-800" : "text-slate-300"}`}
+                        >
+                          {val || "-"}
+                        </td>
+                      ))}
+                      <td className="px-4 py-4 text-center text-indigo-700 font-black bg-indigo-50/30">
+                        {rowSum}
+                      </td>
+                      <td className="px-4 py-4 text-center text-slate-400">
+                        -
+                      </td>
+                      <td className="px-4 py-4 text-center text-slate-600">
+                        {row.pcsPerBox}
+                      </td>
+                      <td className="px-4 py-4 text-center text-blue-800 font-black bg-blue-50/50 border-l-2 border-blue-100">
+                        {rowTotalPcs.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-4 text-center">
+                        <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors active:scale-90">
+                          <Edit2 size={14} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot className="bg-slate-50 border-t-2 border-slate-300 font-black">
+                <tr className="divide-x divide-slate-200">
+                  <td
+                    colSpan="4"
+                    className="px-8 py-5 text-right text-[11px] text-slate-500 uppercase tracking-widest"
+                  >
+                    รวมทั้งหมดประจำวัน
+                  </td>
+                  <td colSpan="17" className="bg-slate-100/50"></td>
+                  <td className="px-4 py-5 text-center text-indigo-700 text-base">
+                    {grandTotals.qty}
+                  </td>
+                  <td className="bg-slate-50"></td>
+                  <td className="bg-slate-50"></td>
+                  <td className="px-4 py-5 text-center text-blue-900 text-lg bg-blue-100/50">
+                    {grandTotals.pcs.toLocaleString()}
+                  </td>
+                  <td className="bg-slate-50"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        {/* --- 4. PAGINATION --- */}
+        <div className="mt-6 flex justify-between items-center px-4 font-bold">
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            Total {inboundRecords.length} Products Entry
+          </p>
+          <div className="flex space-x-1">
+            <button className="p-2 border border-slate-200 rounded-lg bg-white disabled:opacity-30">
+              <ChevronLeft size={16} />
+            </button>
+            <button className="w-8 h-8 flex items-center justify-center text-xs font-black bg-[#004a99] text-white rounded-lg shadow-lg">
+              1
+            </button>
+            <button className="p-2 border border-slate-200 rounded-lg bg-white disabled:opacity-30">
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      </main>
+
+      {/* --- MODAL (คงเดิมตามฟังก์ชันที่ออกแบบไว้) --- */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="bg-[#004a99] p-6 text-white flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                <Plus className="bg-white/20 p-1.5 rounded-lg" />
+                <h3 className="font-black uppercase tracking-tight">
+                  เพิ่มรายการสินค้าส่งเข้าคลัง
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                className="hover:bg-white/20 p-2 rounded-full transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            {/* Modal Body เนื้อหาช่อง 1-17 คงเดิม... */}
+            <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-8 max-h-[70vh] overflow-y-auto no-scrollbar">
+              <div className="space-y-5">
+                <ModalInput label="รหัสสินค้า" placeholder="ระบุรหัสสินค้า" />
+                <div className="grid grid-cols-2 gap-4">
+                  <ModalInput label="Job No." placeholder="104/0868" />
+                  <ModalInput label="ที่จัดเก็บ" placeholder="A" />
+                </div>
+                <ModalInput
+                  label="จำนวนชิ้นต่อกล่อง"
+                  type="number"
+                  placeholder="140"
+                />
+              </div>
+              <div className="space-y-4">
+                <h4 className="text-[10px] font-black text-slate-400 uppercase border-b pb-2 tracking-widest">
+                  ข้อมูลรายช่อง (1-17)
+                </h4>
+                <div className="grid grid-cols-4 lg:grid-cols-6 gap-3">
+                  {Array.from({ length: 17 }, (_, i) => (
+                    <div key={i} className="space-y-1">
+                      <label className="text-[9px] font-black text-slate-300 uppercase ml-1">
+                        ช่อง {i + 1}
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-center outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="p-8 bg-slate-50 border-t flex justify-end space-x-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-8 py-3 font-black text-slate-400 uppercase hover:text-slate-600 transition-colors"
+              >
+                ยกเลิก
+              </button>
+              <button className="px-10 py-3 bg-[#004a99] text-white font-black rounded-2xl shadow-xl active:scale-95 border-b-4 border-blue-900 flex items-center space-x-2">
+                <Save size={18} /> <span>ยืนยันบันทึกข้อมูล</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-// Reusable Input Component
-const InputField = ({
-  label,
-  type,
-  name,
-  value,
-  onChange,
-  placeholder,
-  className = "",
-}) => (
-  <div className="flex flex-col space-y-1.5 group">
-    <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-blue-600">
+const ModalInput = ({ label, ...props }) => (
+  <div className="space-y-1">
+    <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">
       {label}
     </label>
     <input
-      type={type}
-      name={name}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      className={`p-4 border border-slate-200 rounded-xl bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-sm font-bold ${className}`}
+      className="w-full p-3.5 border border-slate-200 rounded-2xl font-bold text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
+      {...props}
     />
   </div>
 );
