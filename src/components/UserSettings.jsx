@@ -12,250 +12,270 @@ import {
   Circle,
   Lock,
   Eye,
-  EyeOff
+  EyeOff,
+  UserCircle,
+  Power,
+  ChevronDown,
 } from "lucide-react";
 
 const UserSettings = ({ user, onBack }) => {
-  // 1. State สำหรับคุมหน้าเมนูย่อย (profile หรือ password)
   const [activeTab, setActiveTab] = useState("profile");
 
-  // 2. จัดการ State ข้อมูลพนักงาน
+  // จัดการ State ข้อมูลพนักงาน
   const [formData, setFormData] = useState({
     username: user?.username || "widely",
-    role: user?.role || "SUPERADMIN",
-    position: "Production Supervisor",
-    manager: "Admin Staff",
+    role: user?.role || "Super Admin",
     isActive: user?.status === "Active" || true,
-    firstName: user?.fullName?.split(" ")[0] || "PT",
+    firstName: user?.fullName?.split(" ")[0] || "PTK",
     lastName: user?.fullName?.split(" ")[1] || "widely",
-    email: user?.email || "PT@widelynext.co.th",
+    email: user?.email || "PTK@widelynext.co.th",
     phone: "062-492-2196",
   });
 
-  // 3. State สำหรับ Change Password
-  const [passwords, setPasswords] = useState({
+  const [passwords] = useState({
     current: "",
     new: "",
-    confirm: ""
+    confirm: "",
   });
-  const [showPass, setShowPass] = useState({ current: false, new: false, confirm: false });
+  const [showPass, setShowPass] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswords((prev) => ({ ...prev, [name]: value }));
-  };
-
   const toggleActive = () => {
-    setFormData(prev => ({ ...prev, isActive: !prev.isActive }));
+    setFormData((prev) => ({ ...prev, isActive: !prev.isActive }));
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f8fafc] font-sans">
-      
-      {/* --- ฝั่งซ้าย: Sidebar เมนูย่อย --- */}
-      <div className="w-72 bg-white border-r border-slate-200 p-8 hidden lg:block animate-in fade-in duration-500">
-        <div className="flex items-center space-x-3 mb-10">
-           <div className="bg-blue-600 p-2 rounded-xl text-white shadow-lg shadow-blue-200">
-              <Settings size={20} />
-           </div>
-           <h2 className="text-xl font-black text-slate-800 tracking-tight">User Settings</h2>
+    <div className="flex min-h-screen bg-[#f8f9fa] font-sans overflow-hidden text-slate-700 tracking-tight">
+      {/* --- ฝั่งซ้าย: Navigation Sidebar --- */}
+      <div className="w-80 bg-white border-r border-slate-200 flex-col hidden lg:flex animate-in fade-in slide-in-from-left duration-500">
+        {/* Profile Identity Header (เพิ่มกลับตามสั่ง) */}
+        <div className="p-10 flex flex-col items-center border-b border-slate-50 bg-slate-50/30">
+          <div className="w-20 h-20 bg-[#001d3d] rounded-[1.8rem] flex items-center justify-center text-white font-black text-3xl shadow-xl mb-4 border-4 border-white">
+            {formData.firstName[0]}
+          </div>
+          <h3 className="text-slate-900 font-black text-lg leading-tight text-center">
+            {formData.firstName} {formData.lastName}
+          </h3>
+          <p className="text-[#004a99] text-[10px] font-black uppercase tracking-[0.15em] mt-1 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+            {formData.role}
+          </p>
         </div>
-        
-        <div className="space-y-3">
-          <button 
-            onClick={() => setActiveTab("profile")}
-            className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl font-black transition-all border ${
-              activeTab === "profile" 
-              ? "bg-blue-50 text-blue-700 border-blue-100 shadow-sm" 
-              : "text-slate-400 border-transparent hover:bg-slate-50"
-            }`}
-          >
-            <User size={18} />
-            <div className="text-left">
-              <p className="text-sm">Profile Info</p>
-              <p className={`text-[10px] font-bold opacity-80 uppercase tracking-tighter ${activeTab === "profile" ? "text-blue-400" : "text-slate-400"}`}>Account Management</p>
-            </div>
-          </button>
 
-          <button 
+        <nav className="flex-1 px-4 py-8 space-y-1">
+          <NavTabButton
+            active={activeTab === "profile"}
+            onClick={() => setActiveTab("profile")}
+            icon={<UserCircle size={20} />}
+            label="Profile"
+            detail="Manage your profile"
+          />
+          <NavTabButton
+            active={activeTab === "password"}
             onClick={() => setActiveTab("password")}
-            className={`w-full flex items-center space-x-4 px-5 py-4 rounded-2xl font-black transition-all border ${
-              activeTab === "password" 
-              ? "bg-blue-50 text-blue-700 border-blue-100 shadow-sm" 
-              : "text-slate-400 border-transparent hover:bg-slate-50"
-            }`}
-          >
-            <Lock size={18} />
-            <div className="text-left">
-              <p className="text-sm">Change Password</p>
-              <p className={`text-[10px] font-bold opacity-80 uppercase tracking-tighter ${activeTab === "password" ? "text-blue-400" : "text-slate-400"}`}>Security Settings</p>
-            </div>
-          </button>
+            icon={<Lock size={20} />}
+            label="Change Password"
+            detail="Manage your password"
+          />
+        </nav>
+
+        <div className="p-10 text-[9px] text-slate-300 font-black uppercase tracking-[0.3em] text-center">
+          Thepvimol Production v1.0
         </div>
       </div>
 
-      {/* --- ฝั่งขวา: ส่วนฟอร์มข้อมูลหลัก --- */}
-      <div className="flex-1 overflow-y-auto animate-in slide-in-from-right duration-500 pb-16">
+      {/* --- ฝั่งขวา: Main Content Area --- */}
+      <div className="flex-1 overflow-y-auto pb-20 animate-in slide-in-from-right duration-500">
         <div className="max-w-4xl mx-auto p-6 lg:p-12">
-          
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h1 className="text-3xl font-black text-slate-800 tracking-tight">
-                {activeTab === "profile" ? "Manage User" : "Security Settings"}
-              </h1>
-              <p className="text-slate-400 font-bold text-sm mt-1 uppercase tracking-widest">
-                {activeTab === "profile" ? "แก้ไขข้อมูลและสิทธิ์การใช้งาน" : "แก้ไขรหัสผ่านเพื่อความปลอดภัย"}
-              </p>
-            </div>
-            <button onClick={onBack} className="flex items-center space-x-2 px-6 py-2.5 bg-white border border-slate-200 rounded-2xl text-slate-600 font-black text-xs hover:bg-slate-50 transition-all shadow-sm active:scale-95 border-b-4">
+          {/* Header & Back Button */}
+          <div className="flex justify-between items-center mb-10">
+            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+              {activeTab === "profile" ? "Profile" : "Security"}
+            </h1>
+            <button
+              onClick={onBack}
+              className="flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 font-black text-[10px] hover:bg-slate-50 transition-all shadow-sm active:scale-95 border-b-4 uppercase tracking-widest"
+            >
               <ChevronLeft size={16} /> <span>BACK TO LIST</span>
             </button>
           </div>
 
-          <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-blue-900/5 border border-slate-100 overflow-hidden transition-all duration-500">
-            
+          <div className="space-y-12">
             {activeTab === "profile" ? (
               /* --- TAB 1: PROFILE INFO --- */
               <>
-                <div className="p-8 md:p-12 bg-slate-50/50 border-b border-slate-100">
-                  <div className="flex items-center space-x-3 mb-8">
-                    <Shield size={20} className="text-[#004a99]" />
-                    <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">1. Account Configuration</h3>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InputGroup label="Username (Primary ID)" icon={<User size={18} />}>
-                      <input disabled value={formData.username} className="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-slate-400 font-bold outline-none cursor-not-allowed italic" />
-                    </InputGroup>
-                    <InputGroup label="System Role" icon={<Shield size={18} />}>
-                      <select name="role" value={formData.role} onChange={handleChange} className="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 font-black outline-none focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer">
-                        <option value="SUPERADMIN">SUPERADMIN</option>
-                        <option value="PRODUCTION_SUP">PRODUCTION_SUP</option>
-                        <option value="OPERATOR">OPERATOR</option>
-                        <option value="WAREHOUSE">WAREHOUSE</option>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Email (Editable ตามสั่ง) */}
+                  <InputWrapper label="Email Address">
+                    <div className="relative">
+                      <Mail
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"
+                        size={18}
+                      />
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+                      />
+                    </div>
+                  </InputWrapper>
+
+                  {/* Role (Dropdown พร้อมลูกศรท้ายฟิลด์) */}
+                  <InputWrapper label="System Role">
+                    <div className="relative group">
+                      <Briefcase
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#004a99] transition-colors"
+                        size={18}
+                      />
+                      <select
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
+                        className="w-full pl-12 pr-12 py-4 bg-white border border-slate-200 rounded-2xl font-black text-slate-900 outline-none focus:ring-4 focus:ring-indigo-50 transition-all text-sm cursor-pointer appearance-none"
+                      >
+                        <option value="Super Admin">Super Admin</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Operator">Operator</option>
+                        <option value="Accounting">Accounting</option>
                       </select>
-                    </InputGroup>
-                    <InputGroup label="Position" icon={<Briefcase size={18} />}>
-                      <input name="position" value={formData.position} onChange={handleChange} className="w-full px-5 py-3 bg-white border border-slate-200 rounded-2xl text-slate-700 font-bold outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" />
-                    </InputGroup>
-                    <div className="space-y-2 flex flex-col justify-end pb-1">
-                      <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Account Access Status</label>
-                      <div onClick={toggleActive} className={`flex items-center justify-between p-3 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${formData.isActive ? "bg-emerald-50 border-emerald-200 shadow-sm" : "bg-slate-100 border-slate-200"}`}>
-                        <div className="flex items-center space-x-3 ml-2">
-                           <Circle size={12} fill={formData.isActive ? "#10b981" : "#94a3b8"} className={formData.isActive ? "text-emerald-500" : "text-slate-400"} />
-                           <span className={`text-sm font-black uppercase tracking-widest ${formData.isActive ? 'text-emerald-700' : 'text-slate-500'}`}>{formData.isActive ? 'Active Now' : 'Inactive / Disabled'}</span>
-                        </div>
-                        <div className={`w-12 h-6 rounded-full relative transition-colors duration-300 ${formData.isActive ? 'bg-emerald-500' : 'bg-slate-300'}`}>
-                           <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 ${formData.isActive ? 'left-7' : 'left-1'}`}></div>
-                        </div>
+                      {/* เพิ่มไอคอนลูกศรที่ส่วนท้าย */}
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-[#004a99] transition-colors">
+                        <ChevronDown size={18} />
                       </div>
                     </div>
+                  </InputWrapper>
+                </div>
+
+                <div className="pt-8 border-t border-slate-100">
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest mb-8">
+                    Personal Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <InputWrapper label="First Name">
+                      <div className="relative">
+                        <User
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"
+                          size={18}
+                        />
+                        <input
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleChange}
+                          className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+                        />
+                      </div>
+                    </InputWrapper>
+                    <InputWrapper label="Last Name">
+                      <div className="relative">
+                        <User
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"
+                          size={18}
+                        />
+                        <input
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleChange}
+                          className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+                        />
+                      </div>
+                    </InputWrapper>
+                    <InputWrapper label="Phone">
+                      <div className="relative">
+                        <Phone
+                          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"
+                          size={18}
+                        />
+                        <input
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className="w-full pl-12 pr-6 py-4 bg-white border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+                        />
+                      </div>
+                    </InputWrapper>
                   </div>
                 </div>
-                <div className="p-8 md:p-12">
-                  <div className="flex items-center space-x-3 mb-8">
-                    <Mail size={20} className="text-[#004a99]" />
-                    <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">2. Personal Information</h3>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <InputGroup label="First Name" required>
-                      <input name="firstName" value={formData.firstName} onChange={handleChange} className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" />
-                    </InputGroup>
-                    <InputGroup label="Last Name" required>
-                      <input name="lastName" value={formData.lastName} onChange={handleChange} className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" />
-                    </InputGroup>
-                    <InputGroup label="Email Address" icon={<Mail size={18} />} required>
-                      <input name="email" value={formData.email} onChange={handleChange} className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" />
-                    </InputGroup>
-                    <InputGroup label="Contact Phone" icon={<Phone size={18} />}>
-                      <input name="phone" value={formData.phone} onChange={handleChange} className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all" />
-                    </InputGroup>
+
+                {/* Status Toggle Section */}
+                <div className="pt-8 border-t border-slate-100">
+                  <div className="flex items-center justify-between p-8 bg-slate-50/50 rounded-[2.5rem] border border-slate-100">
+                    <div className="flex items-center space-x-4">
+                      <div
+                        className={`p-3 rounded-2xl shadow-sm ${formData.isActive ? "bg-emerald-100 text-emerald-600" : "bg-slate-200 text-slate-400"}`}
+                      >
+                        <Power size={22} />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
+                          Account Visibility
+                        </p>
+                        <p className="text-sm font-black text-slate-900 leading-none">
+                          {formData.isActive
+                            ? "เปิดใช้งาน (Active Status)"
+                            : "ระงับการใช้งาน (Inactive Status)"}
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      onClick={toggleActive}
+                      className={`w-16 h-9 rounded-full p-1 cursor-pointer transition-all duration-300 relative ${formData.isActive ? "bg-emerald-500 shadow-lg shadow-emerald-100" : "bg-slate-300"}`}
+                    >
+                      <div
+                        className={`w-7 h-7 bg-white rounded-full shadow-md transition-transform duration-300 transform ${formData.isActive ? "translate-x-7" : "translate-x-0"}`}
+                      />
+                    </div>
                   </div>
                 </div>
               </>
             ) : (
-              /* --- TAB 2: CHANGE PASSWORD --- */
-              <div className="p-8 md:p-12 animate-in slide-in-from-bottom-2 duration-300">
-                <div className="flex items-center space-x-3 mb-8">
-                  <Lock size={20} className="text-orange-500" />
-                  <h3 className="text-lg font-black text-slate-800 uppercase tracking-tight">Update Password</h3>
-                </div>
-                
-                <div className="max-w-xl space-y-8">
-                  <InputGroup label="รหัสผ่านปัจจุบัน (Current Password)" required>
-                    <div className="relative">
-                      <input 
-                        type={showPass.current ? "text" : "password"}
-                        name="current"
-                        value={passwords.current}
-                        onChange={handlePasswordChange}
-                        className="w-full pl-5 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all" 
-                      />
-                      <button onClick={() => setShowPass({...showPass, current: !showPass.current})} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                        {showPass.current ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
-                    </div>
-                  </InputGroup>
-
-                  <div className="h-px bg-slate-100 w-full"></div>
-
-                  <InputGroup label="รหัสผ่านใหม่ (New Password)" required>
-                    <div className="relative">
-                      <input 
-                        type={showPass.new ? "text" : "password"}
-                        name="new"
-                        value={passwords.new}
-                        onChange={handlePasswordChange}
-                        className="w-full pl-5 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all" 
-                      />
-                      <button onClick={() => setShowPass({...showPass, new: !showPass.new})} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                        {showPass.new ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
-                    </div>
-                  </InputGroup>
-
-                  <InputGroup label="ยืนยันรหัสผ่านใหม่ (Confirm New Password)" required>
-                    <div className="relative">
-                      <input 
-                        type={showPass.confirm ? "text" : "password"}
-                        name="confirm"
-                        value={passwords.confirm}
-                        onChange={handlePasswordChange}
-                        className="w-full pl-5 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all" 
-                      />
-                      <button onClick={() => setShowPass({...showPass, confirm: !showPass.confirm})} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                        {showPass.confirm ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
-                    </div>
-                  </InputGroup>
-
-                  <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100">
-                    <p className="text-xs font-bold text-blue-700 leading-relaxed">
-                      <span className="flex items-center mb-1 uppercase tracking-widest font-black"><Shield size={14} className="mr-2" /> ข้อกำหนดความปลอดภัย:</span>
-                      • รหัสผ่านควรมีความยาวอย่างน้อย 8 ตัวอักษร <br/>
-                      • ประกอบด้วยตัวพิมพ์ใหญ่ ตัวพิมพ์เล็ก และตัวเลขอย่างน้อยหนึ่งตัว
-                    </p>
-                  </div>
-                </div>
+              /* --- TAB 2: PASSWORD SETTINGS --- */
+              <div className="max-w-xl space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+                <PassInput
+                  label="Current Password"
+                  value={passwords.current}
+                  show={showPass.current}
+                  onToggle={() =>
+                    setShowPass({ ...showPass, current: !showPass.current })
+                  }
+                />
+                <PassInput
+                  label="New Password"
+                  value={passwords.new}
+                  show={showPass.new}
+                  onToggle={() =>
+                    setShowPass({ ...showPass, new: !showPass.new })
+                  }
+                />
+                <PassInput
+                  label="Confirm New Password"
+                  value={passwords.confirm}
+                  show={showPass.confirm}
+                  onToggle={() =>
+                    setShowPass({ ...showPass, confirm: !showPass.confirm })
+                  }
+                />
               </div>
             )}
 
-            {/* --- Footer Buttons --- */}
-            <div className="px-12 py-8 bg-slate-50 border-t border-slate-100 flex flex-col md:flex-row justify-end items-center gap-4">
-              <button onClick={onBack} className="w-full md:w-auto px-8 py-3.5 text-slate-400 hover:text-slate-600 font-black text-xs uppercase tracking-[0.2em] transition-all">
+            {/* Footer Actions */}
+            <div className="pt-12 flex flex-col md:flex-row justify-end items-center gap-4 border-t border-slate-100 mt-12">
+              <button
+                onClick={onBack}
+                className="text-slate-400 hover:text-slate-900 font-black text-[11px] uppercase tracking-[0.2em] transition-all px-6 py-4"
+              >
                 Discard Changes
               </button>
-              
-              <button className="w-full md:w-auto flex items-center justify-center space-x-2 px-8 py-4 bg-slate-800 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all shadow-lg active:scale-95">
-                <CheckCircle2 size={16} /> <span>Save & Exit</span>
-              </button>
-              
-              <button className={`w-full md:w-auto flex items-center justify-center space-x-2 px-10 py-4 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl active:scale-95 border-b-4 ${activeTab === "profile" ? "bg-[#004a99] hover:bg-blue-800 border-blue-900 shadow-blue-200" : "bg-orange-500 hover:bg-orange-600 border-orange-700 shadow-orange-200"}`}>
-                <Save size={16} /> <span>{activeTab === "profile" ? "Apply Changes" : "Update Password"}</span>
+              <button className="w-full md:w-auto flex items-center justify-center space-x-3 px-12 py-4 bg-[#001d3d] text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl hover:bg-black transition-all active:scale-95 border-b-4 border-black">
+                <CheckCircle2 size={16} /> <span>Save All Changes</span>
               </button>
             </div>
           </div>
@@ -265,19 +285,51 @@ const UserSettings = ({ user, onBack }) => {
   );
 };
 
-// Reusable Input Wrapper
-const InputGroup = ({ label, icon, children, required }) => (
+// Helper Components
+const NavTabButton = ({ active, onClick, icon, label, detail }) => (
+  <button
+    onClick={onClick}
+    className={`w-full flex items-center p-5 rounded-2xl transition-all duration-300 relative ${active ? "bg-indigo-50/80 text-[#004a99]" : "text-slate-400 hover:bg-slate-50"}`}
+  >
+    <div className={`${active ? "text-[#004a99]" : "opacity-40"}`}>{icon}</div>
+    <div className="ml-4 text-left leading-tight">
+      <p className="text-sm font-black tracking-tight">{label}</p>
+      <p className="text-[10px] font-bold opacity-60 mt-0.5 tracking-tighter">
+        {detail}
+      </p>
+    </div>
+  </button>
+);
+
+const InputWrapper = ({ label, children }) => (
+  <div className="space-y-2">
+    <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] ml-1">
+      {label}
+    </label>
+    {children}
+  </div>
+);
+
+const PassInput = ({ label, show, onToggle }) => (
   <div className="space-y-2 group">
-    <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 transition-colors group-focus-within:text-blue-600">
-      {label} {required && <span className="text-red-500 text-lg">*</span>}
+    <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.15em] ml-1 group-focus-within:text-[#004a99] transition-colors">
+      {label}
     </label>
     <div className="relative">
-      {icon && (
-        <div className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-          {icon}
-        </div>
-      )}
-      <div className={icon ? "pl-12" : ""}>{children}</div>
+      <Lock
+        className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#004a99] transition-colors"
+        size={18}
+      />
+      <input
+        type={show ? "text" : "password"}
+        className="w-full pl-12 pr-14 py-4 bg-white border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-indigo-50 transition-all text-sm"
+      />
+      <button
+        onClick={onToggle}
+        className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-900 transition-colors"
+      >
+        {show ? <EyeOff size={18} /> : <Eye size={18} />}
+      </button>
     </div>
   </div>
 );

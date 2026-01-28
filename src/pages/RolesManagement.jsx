@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { 
   ShieldCheck, Search, Plus, Edit, Trash2, 
-  ChevronDown, ChevronUp, RotateCcw
+  ChevronDown, ChevronUp, RotateCcw, X, Save
 } from "lucide-react";
 
 const RolesManagement = ({ onEditRole }) => {
-  // 1. ข้อมูลบทบาทพนักงาน (Mock up)
   const [roles] = useState([
     { id: 1, name: "SUPERADMIN", description: "สิทธิ์สูงสุด จัดการได้ทุกส่วนของระบบ", createdBy: "admin", createdDate: "27/06/2022", modifiedBy: "admin", modifiedDate: "14/08/2025" },
     { id: 2, name: "PRODUCTION_SUP", description: "หัวหน้าฝ่ายผลิต (Supervisor)", createdBy: "admin", createdDate: "15/01/2024", modifiedBy: "admin", modifiedDate: "12/01/2026" },
@@ -16,55 +15,62 @@ const RolesManagement = ({ onEditRole }) => {
 
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAddModal, setShowAddModal] = useState(false);
+  
+  // State สำหรับฟอร์มใน Modal
+  const [newRole, setNewRole] = useState({ name: "", description: "" });
+
+  const filteredRoles = useMemo(() => {
+    return roles.filter(role => 
+      role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      role.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [roles, searchTerm]);
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans">
-      <main className="p-0 animate-in fade-in duration-500">
+      <main className="p-4 md:p-6 max-w-400 mx-auto animate-in fade-in duration-500">
         
-        {/* --- 1. Page Header & Action Button --- */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6 px-6 pt-2 gap-4">
-          <div className="flex items-center space-x-3">
-            <div className="bg-[#004a99] p-2.5 rounded-2xl shadow-lg text-white">
-               <ShieldCheck size={28} />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black text-slate-800 uppercase tracking-tight">Roles Management</h1>
-              <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">จัดการบทบาทและสิทธิ์การใช้งานระบบ</p>
-            </div>
+        {/* 1. Header Area */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
+          <div className="flex items-center space-x-2">
+            <ShieldCheck className="w-6 h-6 text-slate-500" />
+            <h1 className="text-xl font-semibold text-slate-700">จัดการบทบาท (Roles Management)</h1>
           </div>
-          
-          <button className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-8 py-3.5 rounded-2xl shadow-xl transition-all font-black text-sm active:scale-95 border-b-4 border-blue-900">
-            <Plus size={18} />
-            <span>Add Role</span>
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-5 py-2.5 rounded-lg shadow-md transition-all font-medium text-sm active:scale-95 border-b-4 border-blue-900 uppercase"
+          >
+            <Plus className="w-4 h-4" /> <span>Add Role</span>
           </button>
         </div>
 
-        {/* --- 2. Search Section (Layout เดียวกับหน้า Users) --- */}
-        <div className="mx-6 mb-0 bg-white rounded-t-4xl border-x border-t border-slate-200 overflow-hidden shadow-sm">
+        {/* 2. Expandable Search Bar */}
+        <div className="bg-[#e9ecef] rounded-t-xl overflow-hidden mb-0 border-x border-t border-slate-200 shadow-sm">
           <div 
-            onClick={() => setIsSearchExpanded(!isSearchExpanded)}
-            className="px-8 py-5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors"
+            onClick={() => setIsSearchExpanded(!isSearchExpanded)} 
+            className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-200/50 transition-colors"
           >
-            <div className="flex items-center space-x-3 text-[#004a99]">
-              <Search size={20} />
-              <span className="text-sm font-black uppercase tracking-widest text-blue-900">Search Role</span>
+            <div className="flex items-center space-x-2 text-slate-600 font-bold">
+              <Search className="w-4 h-4 text-[#004a99]" />
+              <span className="text-sm tracking-tight uppercase">Search Role Filters</span>
             </div>
-            {isSearchExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            {isSearchExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
-
+          
           {isSearchExpanded && (
-            <div className="px-8 pb-8 pt-2 border-t border-slate-100 animate-in slide-in-from-top-2">
+            <div className="bg-white px-8 pb-8 pt-4 border-t border-slate-200 animate-in slide-in-from-top-2">
               <div className="relative">
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="ระบุชื่อบทบาท หรือรายละเอียด เพื่อค้นหา..."
-                  className="w-full px-6 py-4 bg-slate-50 border border-slate-200 rounded-3xl focus:ring-2 focus:ring-blue-500 outline-none transition font-medium pr-12"
+                  className="w-full px-6 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition font-bold text-sm text-slate-600 pr-12"
                 />
                 <button 
                   onClick={() => setSearchTerm("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-slate-300 hover:text-slate-600 transition-colors"
                 >
                   <RotateCcw size={18} />
                 </button>
@@ -73,70 +79,113 @@ const RolesManagement = ({ onEditRole }) => {
           )}
         </div>
 
-        {/* --- 3. Roles Table Content --- */}
-        <div className="mx-6 bg-white rounded-b-4xl shadow-2xl overflow-hidden border border-slate-200">
-          <div className="p-6 bg-slate-50 border-b border-slate-200">
-             <h2 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">Table of transaction roles</h2>
-          </div>
+        {/* 3. Roles Table */}
+        <div className="bg-white rounded-b-xl shadow-md overflow-hidden border border-slate-200">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-white border-b border-slate-200">
-                  <th className="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest text-center w-28">Tool</th>
-                  <th className="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest">Name</th>
-                  <th className="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest">Description</th>
-                  <th className="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest">Created By</th>
-                  <th className="px-6 py-5 text-[11px] font-black text-slate-500 uppercase tracking-widest">Modified Date</th>
+              <thead className="bg-[#f1f3f5] border-b border-slate-300 font-bold">
+                <tr className="divide-x divide-slate-300 text-[11px] uppercase text-slate-600">
+                  <th className="px-4 py-3 text-center w-24">Tool</th>
+                  <th className="px-4 py-3">Role Name</th>
+                  <th className="px-4 py-3">Description</th>
+                  <th className="px-4 py-3 w-40">Created By</th>
+                  <th className="px-4 py-3 w-40">Modified Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
-                {roles.map((role) => (
-                  <tr key={role.id} className="hover:bg-blue-50/40 transition-colors group">
-                    <td className="px-6 py-5">
-                      <div className="flex items-center justify-center space-x-3">
+              <tbody className="divide-y divide-slate-200 text-sm">
+                {filteredRoles.map((role) => (
+                  <tr key={role.id} className="hover:bg-blue-50/30 transition-colors divide-x divide-slate-100 font-semibold text-slate-700">
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center space-x-2">
                         <button 
                           onClick={() => onEditRole(role)}
-                          className="p-2.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white rounded-xl transition-all shadow-sm border border-indigo-100 active:scale-90"
+                          className="p-2 bg-blue-50 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-all border border-blue-200 active:scale-90"
                           title="Edit Permissions"
                         >
-                          <Edit size={16} />
+                          <Edit size={14} />
                         </button>
-                        <button 
-                          className="p-2.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all shadow-sm border border-red-100 active:scale-90"
-                          title="Delete Role"
-                        >
-                          <Trash2 size={16} />
+                        <button className="p-2 bg-red-50 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-all border border-red-200 active:scale-90" title="Delete Role">
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>
-                    <td className="px-6 py-5 font-black text-slate-700 text-sm">
-                      <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-lg w-fit">
+                    <td className="px-4 py-3 font-bold">
+                      <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg border border-blue-100 uppercase text-[10px] tracking-wider font-black">
                         {role.name}
-                      </div>
+                      </span>
                     </td>
-                    <td className="px-6 py-5 font-bold text-slate-500 text-sm">{role.description}</td>
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-3 text-slate-500">{role.description}</td>
+                    <td className="px-4 py-3">
                       <div className="text-xs font-black text-slate-700">{role.createdBy}</div>
-                      <div className="text-[10px] text-slate-400 font-bold">{role.createdDate}</div>
+                      <div className="text-[10px] text-slate-400 font-bold tracking-tight">{role.createdDate}</div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-3">
                       <div className="text-xs font-black text-slate-700">{role.modifiedBy}</div>
-                      <div className="text-[10px] text-slate-400 font-bold">{role.modifiedDate}</div>
+                      <div className="text-[10px] text-slate-400 font-bold tracking-tight">{role.modifiedDate}</div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          
-          {/* Footer Padding */}
-          <div className="px-10 py-6 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
-             <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                Total {roles.length} Roles Defined
-             </div>
+          <div className="px-6 py-4 bg-[#f8f9fa] border-t border-slate-200 flex items-center justify-between font-bold text-slate-500">
+            <div className="text-[11px] uppercase tracking-widest">Total {filteredRoles.length} Roles Defined</div>
+            <div className="text-[10px] text-[#004a99] italic uppercase tracking-tighter">Access Control Management</div>
           </div>
         </div>
       </main>
+
+      {/* --- ADD ROLE MODAL --- */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+          <div className="bg-white w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 font-sans">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-[#004a99] text-white">
+              <div className="flex items-center space-x-3">
+                <ShieldCheck size={24}/>
+                <h3 className="text-lg font-black uppercase tracking-tight">เพิ่มบทบาทใหม่ (Add Role)</h3>
+              </div>
+              <button onClick={() => setShowAddModal(false)} className="hover:bg-white/20 p-2 rounded-full transition-colors"><X size={20} /></button>
+            </div>
+            
+            <div className="p-8 space-y-6">
+              <div className="space-y-2">
+                <label className="text-[11px] font-black text-slate-400 uppercase ml-1 tracking-widest">Role Name*</label>
+                <input 
+                  type="text" 
+                  value={newRole.name}
+                  onChange={(e) => setNewRole({...newRole, name: e.target.value.toUpperCase()})}
+                  placeholder="เช่น WAREHOUSE_MGR"
+                  className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[11px] font-black text-slate-400 uppercase ml-1 tracking-widest">Description</label>
+                <textarea 
+                  rows="3"
+                  value={newRole.description}
+                  onChange={(e) => setNewRole({...newRole, description: e.target.value})}
+                  placeholder="ระบุรายละเอียดหน้าที่ของบทบาทนี้..."
+                  className="w-full px-5 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all text-sm resize-none"
+                />
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                <p className="text-[10px] font-bold text-blue-700 leading-relaxed uppercase">
+                  หมายเหตุ: ชื่อบทบาทควรเป็นภาษาอังกฤษตัวพิมพ์ใหญ่และไม่มีช่องว่าง เพื่อความถูกต้องในการประมวลผลสิทธิ์ในระบบ
+                </p>
+              </div>
+            </div>
+
+            <div className="p-6 bg-slate-50 border-t flex space-x-3">
+              <button onClick={() => setShowAddModal(false)} className="flex-1 py-3.5 font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-all text-xs">ยกเลิก</button>
+              <button className="flex-1 py-3.5 bg-[#004a99] text-white font-black rounded-xl shadow-lg active:scale-95 border-b-4 border-blue-900 flex items-center justify-center space-x-2 text-xs">
+                <Save size={16} /> <span>Save Role</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
