@@ -143,7 +143,7 @@ const ProductWriteoff = ({ setCurrentPage }) => {
           </div>
           <button
             onClick={() => setCurrentPage("writeoff_form")}
-            className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-6 py-3 rounded-2xl shadow-xl transition-all font-black text-sm active:scale-95 border-b-4 border-blue-900"
+            className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-5 py-2.5 rounded-lg shadow-md transition-all font-medium text-sm active:scale-95 border-b-4 border-blue-900 uppercase"
           >
             <Plus size={18} />
             <span>เพิ่มบันทึกการตัดสินค้า</span>
@@ -158,7 +158,7 @@ const ProductWriteoff = ({ setCurrentPage }) => {
           >
             <div className="flex items-center space-x-2 text-slate-600 font-bold">
               <Search size={18} className="text-[#004a99]" />
-              <span className="text-sm">ค้นหารายการตัดสินค้า</span>
+              <span className="text-sm">ค้นหา</span>
             </div>
             {isSearchExpanded ? (
               <ChevronUp size={18} />
@@ -174,7 +174,7 @@ const ProductWriteoff = ({ setCurrentPage }) => {
             >
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <SearchInput
-                  label="Job Order No."
+                  label="Job No."
                   value={tempSearch.jobNo}
                   onChange={(e) =>
                     setTempSearch({ ...tempSearch, jobNo: e.target.value })
@@ -221,7 +221,7 @@ const ProductWriteoff = ({ setCurrentPage }) => {
                 </div>
                 <div className="md:col-span-2 space-y-2">
                   <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-                    วันที่ผลิต (ช่วงเวลา)
+                    วันที่ผลิต (จาก - ถึง)
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -287,7 +287,7 @@ const ProductWriteoff = ({ setCurrentPage }) => {
             <table className="w-full text-left border-collapse min-w-275">
               <thead>
                 <tr className="bg-[#f1f3f5] border-b border-slate-300 divide-x divide-slate-300">
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-32">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-32">
                     Job No.
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
@@ -311,7 +311,7 @@ const ProductWriteoff = ({ setCurrentPage }) => {
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
                     ผู้บันทึก
                   </th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-24">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-24">
                     Tool
                   </th>
                 </tr>
@@ -445,7 +445,7 @@ const ProductWriteoff = ({ setCurrentPage }) => {
 
 const SearchInput = ({ label, ...props }) => (
   <div className="space-y-2">
-    <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+    <label className="text-xs font-bold text-slate-600 tracking-wider">
       {label}
     </label>
     <input

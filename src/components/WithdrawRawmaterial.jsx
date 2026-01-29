@@ -7,6 +7,7 @@ import {
   Hash,
   Layers,
   FileText,
+  ChevronDown,
 } from "lucide-react";
 
 const RawMaterialIssue = ({ addRequisition, setCurrentPage }) => {
@@ -90,8 +91,8 @@ const RawMaterialIssue = ({ addRequisition, setCurrentPage }) => {
             {/* --- ส่วนที่ล็อค Job และ รหัสสินค้า (พื้นหลังสีเทา) --- */}
             <div className="bg-slate-100 p-6 rounded-2xl border border-slate-200 space-y-4 shadow-inner">
               <div>
-                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">
-                  Job Order No. (Locked)
+                <label className="block text-xs font-black text-slate-500 mb-2 tracking-widest">
+                  Job Order No.
                 </label>
                 <input
                   type="text"
@@ -103,7 +104,7 @@ const RawMaterialIssue = ({ addRequisition, setCurrentPage }) => {
 
               <div>
                 <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">
-                  รหัสสินค้า / รายละเอียด
+                  รหัสสินค้า
                 </label>
                 <input
                   type="text"
@@ -121,20 +122,44 @@ const RawMaterialIssue = ({ addRequisition, setCurrentPage }) => {
                   <Layers className="w-4 h-4 mr-2 text-blue-500" /> รหัสวัตถุดิบ
                   *
                 </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="เช่น 5B660055FB"
-                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none shadow-sm text-sm font-bold"
-                  value={formData.materialId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, materialId: e.target.value })
-                  }
-                />
+                <div className="relative group">
+                  <select
+                    required
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none shadow-sm text-sm font-bold appearance-none bg-white cursor-pointer transition-all"
+                    value={formData.materialId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, materialId: e.target.value })
+                    }
+                  >
+                    <option value="" disabled>
+                      เลือกรายการรหัสวัตถุดิบ
+                    </option>
+                    <option value="5B660055FB">
+                      5B660055FB
+                    </option>
+                    <option value="5B660055FT">
+                      5T660055FT
+                    </option>
+                    <option value="5A660055FA">
+                      5A660055FA
+                    </option>
+                    <option value="5C660055FC">
+                      5C660055FC
+                    </option>
+                    <option value="5D660055FD">
+                      5D660055FD
+                    </option>
+                  </select>
+
+                  {/* ไอคอนลูกศร Dropdown ส่วนท้าย */}
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-blue-500 transition-colors">
+                    <ChevronDown size={18} />
+                  </div>
+                </div>
               </div>
 
               <div>
-                <label className="flex items-center text-[11px] font-bold text-slate-500 mb-2 uppercase tracking-tight">
+                <label className="flex items-center text-[11px] font-bold text-slate-500 mb-2 tracking-tight">
                   <Hash className="w-4 h-4 mr-2 text-blue-500" /> Lot No. *
                 </label>
                 <input

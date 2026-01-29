@@ -149,7 +149,7 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
           {/* แก้ไข onClick ให้เรียก onAddNew เพื่อไปหน้าแบบฟอร์มเปล่า */}
           <button
             onClick={onAddNew}
-            className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-6 py-3 rounded-2xl shadow-xl transition-all font-black text-sm active:scale-95 border-b-4 border-blue-900"
+            className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-5 py-2.5 rounded-lg shadow-md transition-all font-medium text-sm active:scale-95 border-b-4 border-blue-900 uppercase"
           >
             <Plus size={18} />
             <span>เพิ่มบันทึกการขึ้นรูป</span>
@@ -164,7 +164,7 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
           >
             <div className="flex items-center space-x-2 text-slate-600 font-bold">
               <Search size={18} className="text-[#004a99]" />
-              <span className="text-sm">ค้นหารายการขึ้นรูปสินค้า</span>
+              <span className="text-sm">ค้นหา</span>
             </div>
             {isSearchExpanded ? (
               <ChevronUp size={18} />
@@ -180,12 +180,12 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
             >
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <SearchInput
-                  label="Job Order No."
+                  label="Job No."
                   value={tempSearch.jobNo}
                   onChange={(e) =>
                     setTempSearch({ ...tempSearch, jobNo: e.target.value })
                   }
-                  placeholder="เลขที่ Job"
+                  placeholder="ระบุเลขที่ Job"
                 />
                 <SearchInput
                   label="รหัสสินค้า"
@@ -215,11 +215,11 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
                   onChange={(e) =>
                     setTempSearch({ ...tempSearch, materialId: e.target.value })
                   }
-                  placeholder="ระบุวัตถุดิบ"
+                  placeholder="ระบุรหัสวัตถุดิบ"
                 />
                 <div className="md:col-span-2 space-y-2">
-                  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-                    วันที่ผลิต (ช่วงเวลา)
+                  <label className="text-xs font-bold text-slate-600 tracking-wider">
+                    วันที่ผลิต (จาก - ถึง)
                   </label>
                   <div className="flex items-center space-x-2">
                     <input
@@ -250,7 +250,7 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                  {/* <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
                     กะผลิต
                   </label>
                   <select
@@ -263,16 +263,16 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
                     <option value="">ทั้งหมด</option>
                     <option value="A">กะ A (เช้า)</option>
                     <option value="B">กะ B (ดึก)</option>
-                  </select>
+                  </select> */}
                 </div>
-                <SearchInput
+                {/* <SearchInput
                   label="ผู้ใช้/อีเมล"
                   value={tempSearch.user}
                   onChange={(e) =>
                     setTempSearch({ ...tempSearch, user: e.target.value })
                   }
                   placeholder="ระบุชื่อผู้ใช้"
-                />
+                /> */}
               </div>
               <div className="flex justify-end mt-6 space-x-2">
                 <button
@@ -299,7 +299,7 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
             <table className="w-full text-left border-collapse min-w-250">
               <thead>
                 <tr className="bg-[#f1f3f5] border-b border-slate-300 divide-x divide-slate-300">
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-32">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-32">
                     Job No.
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
@@ -323,7 +323,7 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
                     ผู้บันทึก
                   </th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-24">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-24">
                     Tool
                   </th>
                 </tr>
@@ -349,7 +349,7 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
                         </div>
                       </td>
                       <td className="px-4 py-4 text-slate-600">
-                        <div className="font-bold text-blue-500">
+                        <div className="font-bold text-blue-700">
                           {rec.machineCode}
                           </div>
                       </td>
@@ -463,7 +463,7 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
 
 const SearchInput = ({ label, ...props }) => (
   <div className="space-y-2">
-    <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+    <label className="text-xs font-bold text-slate-600 tracking-wider">
       {label}
     </label>
     <input

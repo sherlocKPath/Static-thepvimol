@@ -11,7 +11,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-const JobOrderInterface = ({ setCurrentPage }) => {
+const JobOrderInterface = ({ onCreateMaterial }) => {
   const [jobs] = useState([
     {
       id: "J104/0868",
@@ -236,7 +236,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* ค้นหาด้วย Job No. */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-600 uppercase">
+                  <label className="text-xs font-bold text-slate-600">
                     Job No.
                   </label>
                   <input
@@ -288,7 +288,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
 
                 {/* เพิ่ม: ค้นหาตามสถานะ (Dropdown) */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-slate-600 uppercase">
+                  <label className="text-xs font-bold text-slate-600">
                     สถานะ Job Order
                   </label>
                   <select
@@ -308,9 +308,9 @@ const JobOrderInterface = ({ setCurrentPage }) => {
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="px-6 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition text-sm font-bold active:scale-95"
+                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold flex items-center active:scale-95"
                 >
-                  ล้างค่า
+                  <RotateCcw className="w-4 h-4 mr-1" /> ล้างค่า
                 </button>
                 <button
                   type="submit"
@@ -330,8 +330,8 @@ const JobOrderInterface = ({ setCurrentPage }) => {
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#f1f3f5] border-b border-slate-300">
                 <tr className="divide-x divide-slate-300">
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-32">
-                    Job NO.
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-32">
+                    Job No.
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
                     รายละเอียดสินค้า
@@ -345,7 +345,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-32">
                     สถานะ
                   </th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-20">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-20">
                     Tool
                   </th>
                 </tr>
@@ -391,7 +391,7 @@ const JobOrderInterface = ({ setCurrentPage }) => {
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-center space-x-2">
                           {/* ปุ่มดูรายละเอียด - แสดงในทุกสถานะ */}
-                          <button
+                          {/* <button
                             onClick={() => {
                               setCurrentPage("jobDetail");
                             }}
@@ -399,13 +399,13 @@ const JobOrderInterface = ({ setCurrentPage }) => {
                             className="group flex items-center justify-center p-2 bg-slate-100 hover:bg-blue-600 text-slate-600 hover:text-white rounded-lg transition-all duration-200 shadow-sm active:scale-90 border border-slate-200 hover:border-blue-600"
                           >
                             <Search className="w-4 h-4" />
-                          </button>
+                          </button> */}
 
                           {/* ปุ่มเพิ่มใบเบิก - แสดงเฉพาะสถานะ "รอเบิกวัตถุดิบ" หรือ "เบิกวัตถุดิบ" */}
                           {(job.status === "รอเบิกวัตถุดิบ" ||
                             job.status === "เบิกวัตถุดิบ") && (
                             <button
-                              onClick={() => setCurrentPage("requisition")}
+                              onClick={() => onCreateMaterial()}
                               title="สร้างใบเบิกวัตถุดิบ"
                               className="group flex items-center justify-center p-2 bg-emerald-50 hover:bg-emerald-600 text-emerald-600 hover:text-white rounded-lg transition-all duration-200 shadow-sm active:scale-90 border border-emerald-200 hover:border-emerald-600"
                             >

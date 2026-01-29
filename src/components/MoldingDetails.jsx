@@ -18,6 +18,8 @@ import {
   Edit3,
   X,
   Calendar,
+  Layers,
+  Monitor,
 } from "lucide-react";
 
 const MoldingDetail = ({ moldingData, onBack }) => {
@@ -35,6 +37,12 @@ const MoldingDetail = ({ moldingData, onBack }) => {
       [groupKey]: !prev[groupKey],
     }));
   };
+
+  // 1. State สำหรับควบคุมการเปิด-ปิด Modal ของแต่ละ Card
+  const [activeModal, setActiveModal] = useState(null); // 'production', 'quality', 'statistics' หรือ null
+  const closeModal = () => setActiveModal(null);
+
+  const [formData, setFormData] = useState({ yieldA: 0, yieldB: 0 });
 
   // คำนวณสถิติความสูงจาก Array ปัจจุบัน
   const heightStats = useMemo(() => {
@@ -170,9 +178,9 @@ const MoldingDetail = ({ moldingData, onBack }) => {
           </div>
         </div>
         <div className="flex items-center space-x-3">
-          <button className="flex items-center space-x-2 px-5 py-2.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl font-bold text-xs hover:bg-blue-100 transition-all active:scale-95">
+          {/* <button className="flex items-center space-x-2 px-5 py-2.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl font-bold text-xs hover:bg-blue-100 transition-all active:scale-95">
             <Maximize2 size={14} /> <span>Print Report</span>
-          </button>
+          </button> */}
           <button
             onClick={onBack}
             className="flex items-center space-x-2 px-6 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-50 shadow-sm active:scale-95 uppercase"
@@ -189,13 +197,17 @@ const MoldingDetail = ({ moldingData, onBack }) => {
           <InfoCard
             title="Production Details"
             icon={<ClipboardList size={18} className="text-blue-600" />}
-            onEdit={() => console.log("เปิด Modal แก้ไขรายละเอียดการผลิต")}
+            onEdit={() => setActiveModal("production details")}
           >
-            <DetailRow label="รหัสสินค้า" value="PP-PL17 FB" isStrong />
             <DetailRow label="วันที่ผลิต" value="15/08/2568" />
-            <DetailRow label="กะการผลิต" value="A (07:00 - 19:00 น.)" />
+            <DetailRow label="รหัสสินค้า" value="PP-PL17 FB" isStrong />
             <DetailRow
-              label="เครื่องจักร"
+              label="Job No."
+              value={moldingData?.jobNo || "J104/0868"}
+              isStrong
+            />
+            <DetailRow
+              label="รหัสเครื่องจักร"
               value="MC-VF-1"
               color="text-indigo-600"
               isStrong
@@ -206,23 +218,23 @@ const MoldingDetail = ({ moldingData, onBack }) => {
           <InfoCard
             title="Quality Standards"
             icon={<Settings size={18} className="text-emerald-600" />}
-            onEdit={() => console.log("เปิด Modal แก้ไขรายละเอียดการผลิต")}
+            onEdit={() => setActiveModal("quality standards")}
           >
-            <DetailRow label="ขนาด (กxยxส)" value="208 x 263 x 36 mm" />
-            <DetailRow label="ความหนาเป้าหมาย" value="20.40 micron" isStrong />
-            <DetailRow label="สีสินค้า" value="สีดำ" />
             <DetailRow
               label="รหัสวัตถุดิบหลัก"
               value="5B660055FB"
               color="text-blue-600"
             />
+            <DetailRow label="ขนาด (กxยxส)" value="208 x 263 x 36 mm" />
+            <DetailRow label="ความหนา" value="20.40 micron" isStrong />
+            <DetailRow label="สีสินค้า" value="สีดำ" />
           </InfoCard>
 
           {/* Card: ข้อมูลการผลิต (อ้างอิงจากรูป f4ff04 และใบงานจริง) */}
           <InfoCard
             title="Production Statistics"
             icon={<Clock size={18} className="text-blue-600" />}
-            onEdit={() => console.log("เปิด Modal แก้ไขรายละเอียดการผลิต")}
+            onEdit={() => setActiveModal("production statistics")}
           >
             <div className="space-y-4 pt-1">
               <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
@@ -276,36 +288,136 @@ const MoldingDetail = ({ moldingData, onBack }) => {
               </div>
             </div>
           </InfoCard>
+        </div>
 
-          {/* สรุปผลผลิตรวม */}
-          {/* <InfoCard
-            title="Total Accumulated"
-            icon={<Package size={18} className="text-orange-600" />}
-          >
-            <div className="grid grid-cols-2 gap-4 pt-2">
-              <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100">
-                <p className="text-[10px] font-black text-emerald-600 uppercase">
-                  Grade A
-                </p>
-                <p className="text-xl font-black text-emerald-700">3,841</p>
+        {activeModal && (
+          <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+              {/* Modal Header - เปลี่ยนเป็นสีน้ำเงินเข้มตามระบบ */}
+              <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-[#004a99] text-white">
+                <div className="flex items-center space-x-3">
+                  {activeModal === "production details" && (
+                    <ClipboardList size={22} />
+                  )}
+                  {activeModal === "quality standards" && (
+                    <Settings size={22} />
+                  )}
+                  {activeModal === "production statistics" && (
+                    <Clock size={22} />
+                  )}
+                  <h3 className="text-lg font-black uppercase tracking-tight">
+                    Edit {activeModal}
+                  </h3>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="hover:bg-white/20 p-2 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
               </div>
-              <div className="p-3 bg-amber-50 rounded-2xl border border-amber-100">
-                <p className="text-[10px] font-black text-amber-600 uppercase">
-                  Grade B
-                </p>
-                <p className="text-xl font-black text-amber-700">9</p>
+
+              {/* Modal Body - ดึงข้อมูลเก่ามาแสดง (ตัวอย่างการใช้ defaultValue) */}
+              <div className="p-10 space-y-6">
+                {activeModal === "production details" && (
+                  <div className="space-y-4">
+                    <ModalInput
+                      label="วันที่ผลิต"
+                      type="date"
+                      icon={<Calendar size={16} />}
+                      defaultValue="2025-08-15"
+                    />
+                    <ModalInput
+                      label="รหัสสินค้า"
+                      icon={<Package size={16} />}
+                      defaultValue="PP-PL17 FB"
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <ModalInput
+                        label="Job No."
+                        defaultValue={moldingData?.jobNo || "J104/0868"}
+                      />
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
+                          เครื่องจักร
+                        </label>
+                        <select className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-sm outline-none focus:ring-4 focus:ring-blue-500/10 cursor-pointer">
+                          <option selected>MC-VF-1</option>
+                          <option>MC-VF-2</option>
+                          <option>MC-VF-3</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeModal === "quality standards" && (
+                  <div className="space-y-4">
+                    <ModalInput
+                      label="รหัสวัตถุดิบหลัก"
+                      icon={<Layers size={16} />}
+                      defaultValue="5B660055FB"
+                    />
+                    <ModalInput
+                      label="ขนาด (กว้าง x ยาว x สูง)"
+                      defaultValue="208 x 263 x 36 mm"
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <ModalInput
+                        label="ความหนา (Micron)"
+                        type="number"
+                        defaultValue="20.40"
+                      />
+                      <ModalInput label="สีสินค้า" defaultValue="สีดำ" />
+                    </div>
+                  </div>
+                )}
+
+                {activeModal === "production statistics" && (
+                  <div className="space-y-4">
+                    <ModalInput
+                      label="จำนวนเฟรมต่อม้วน"
+                      type="number"
+                      defaultValue="7400"
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <ModalInput
+                        label="จำนวนชิ้นต่อเฟรม"
+                        type="number"
+                        defaultValue="8"
+                      />
+                      <ModalInput
+                        label="เวลาผลิตทั้งหมด (ชม.)"
+                        type="number"
+                        defaultValue="12"
+                      />
+                    </div>
+                    <div className="bg-blue-50 p-5 rounded-4xl border border-blue-100 flex items-center space-x-4">
+                      <Monitor size={20} className="text-blue-600" />
+                      <p className="text-[11px] font-bold text-blue-800 leading-tight uppercase tracking-tight">
+                        ระบบจะคำนวณอัตราเฉลี่ย (0.52 Rolls/Hr)
+                        ให้ใหม่อัตโนมัติหลังกดบันทึก
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="p-3 bg-red-50 rounded-2xl border border-red-100 col-span-2">
-                <p className="text-[10px] font-black text-red-600 uppercase text-center">
-                  Total Scrap (เสีย)
-                </p>
-                <p className="text-xl font-black text-red-700 text-center">
-                  385 <span className="text-xs font-normal">ชิ้น</span>
-                </p>
+
+              {/* Modal Footer - ปุ่ม Save สีน้ำเงินเข้มและขอบล่างหนา */}
+              <div className="p-8 bg-slate-50 border-t flex space-x-4 font-sans">
+                <button
+                  onClick={closeModal}
+                  className="flex-1 py-4 font-black text-slate-400 uppercase tracking-widest hover:text-slate-600 transition-all text-xs"
+                >
+                  ยกเลิก
+                </button>
+                <button className="flex-1 py-4 bg-[#004a99] text-white font-black rounded-2xl shadow-xl active:scale-95 border-b-4 border-black flex items-center justify-center space-x-2 text-xs uppercase tracking-widest hover:bg-blue-600 transition-all">
+                  <Save size={16} /> <span>Save Changes</span>
+                </button>
               </div>
             </div>
-          </InfoCard> */}
-        </div>
+          </div>
+        )}
 
         {/* --- 3. PRODUCTION TABLE WITH GROUPING --- */}
         <div className="mb-10">
@@ -330,12 +442,12 @@ const MoldingDetail = ({ moldingData, onBack }) => {
           <div className="bg-white rounded-4xl shadow-2xl border border-slate-100 overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#f1f3f5] border-b border-slate-300">
-                <tr className="text-[10px] font-black uppercase tracking-widest text-slate-600 divide-x divide-slate-200">
+                <tr className="text-[10px] font-black tracking-widest text-slate-600 divide-x divide-slate-200">
                   <th className="px-6 py-4 text-center w-28">Tool</th>
                   <th className="px-4 py-4 text-center w-20">ม้วนที่</th>
-                  <th className="px-6 py-4">Lot-No / Seq</th>
-                  <th className="px-6 py-4 text-center">น.น. (kg)</th>
-                  <th className="px-6 py-4 text-center">ความหนา (ก/ห)</th>
+                  <th className="px-6 py-4">Lot No. / Seq</th>
+                  <th className="px-6 py-4 text-center">นน.ม้วน (kg)</th>
+                  <th className="px-6 py-4 text-center">หนาก่อน/หลัง VAC</th>
                   <th className="px-6 py-4 text-center">วันที่ผลิต</th>
                   <th className="px-6 py-4 text-center">ผลผลิต A</th>
                   <th className="px-6 py-4 text-center">ผลผลิต B</th>
@@ -374,15 +486,15 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                             <div className="flex items-center space-x-4">
                               <div className="flex items-center space-x-2 bg-indigo-600 px-3 py-1 rounded-lg text-white font-black text-[10px] uppercase shadow-sm">
                                 <Package size={12} />{" "}
-                                <span>LOT: {rolls[0].lotNo}</span>
+                                <span>Lot: {rolls[0].lotNo}</span>
                               </div>
-                              <div className="text-[11px] font-bold text-slate-500 flex items-center">
+                              {/* <div className="text-[11px] font-bold text-slate-500 flex items-center">
                                 <Calendar
                                   size={14}
                                   className="mr-1 opacity-50"
                                 />{" "}
                                 {rolls[0].mfgDate}
-                              </div>
+                              </div> */}
                             </div>
                             {isExpanded ? (
                               <ChevronUp
@@ -440,7 +552,7 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                                     {roll.lotNo}
                                   </div>
                                   <div className="text-[10px] text-slate-400 font-bold uppercase italic">
-                                    Seq: {roll.seq}
+                                    Seq : {roll.seq}
                                   </div>
                                 </td>
                                 <td className="px-6 py-4 text-center font-bold text-blue-700 bg-blue-50/20">
@@ -473,17 +585,36 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                                     colSpan="10"
                                     className="px-10 py-6 bg-slate-50/80 border-y border-indigo-100"
                                   >
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in slide-in-from-top-2 duration-300">
+                                    <div className="animate-in slide-in-from-top-2 duration-300">
                                       <div className="space-y-4">
                                         <h4 className="text-xs font-black text-indigo-700 uppercase flex items-center">
                                           <AlertTriangle
                                             size={14}
                                             className="mr-2"
-                                          />{" "}
+                                          />
                                           ปัญหาที่พบระหว่างกระบวนการ (QC Check)
                                           ของม้วน #{roll.rollNo}
                                         </h4>
-                                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+
+                                        {/* จัดเรียงเป็น Grid 2 แถว (แถวละประมาณ 6-7 รายการ) */}
+                                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                                          {/* แถวที่ 1 */}
+                                          <QCBadge
+                                            label="กล่องไม่มีรู"
+                                            checked={true}
+                                          />
+                                          <QCBadge
+                                            label="กล่องร่องพับไม่ได้"
+                                            checked={false}
+                                          />
+                                          <QCBadge
+                                            label="กรอบ"
+                                            checked={false}
+                                          />
+                                          <QCBadge
+                                            label="นิ่ม"
+                                            checked={true}
+                                          />
                                           <QCBadge
                                             label="หน้ากว้างไม่เท่า"
                                             checked={false}
@@ -496,12 +627,26 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                                             label="ม้วนโฟมติด"
                                             checked={false}
                                           />
+
+                                          {/* แถวที่ 2 */}
                                           <QCBadge
                                             label="สีมีปัญหา"
                                             checked={false}
                                           />
                                           <QCBadge
+                                            label="ฟิล์มเคลือบไม่ติด"
+                                            checked={false}
+                                          />
+                                          <QCBadge
                                             label="ฟิล์มมีรอยยับ"
+                                            checked={false}
+                                          />
+                                          <QCBadge
+                                            label="ฟิล์มเคลือบไม่ตรง"
+                                            checked={false}
+                                          />
+                                          <QCBadge
+                                            label="การปิดฝาได้"
                                             checked={false}
                                           />
                                           <QCBadge
@@ -510,16 +655,6 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                                           />
                                         </div>
                                       </div>
-                                      {/* <div className="bg-white p-5 rounded-2xl border border-indigo-100 shadow-inner flex flex-col justify-center">
-                                        <h4 className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">
-                                          Internal Remarks
-                                        </h4>
-                                        <p className="text-sm font-bold text-slate-600 italic">
-                                          "ม้วนนี้พบปัญหาฟิล์มยับในช่วง 10
-                                          เมตรแรก ทำการคัดแยกเกรด B
-                                          เรียบร้อยแล้ว"
-                                        </p>
-                                      </div> */}
                                     </div>
                                   </td>
                                 </tr>
@@ -793,14 +928,9 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                 <h4 className="text-blue-700 font-black uppercase text-sm border-b pb-2">
                   วัตถุดิบและสเปค
                 </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <ModalInput label="LOT NO." placeholder="เลข Lot" />
-                  <ModalInput
-                    label="SEQ (ลำดับ)"
-                    type="number"
-                    placeholder="0"
-                  />
-                </div>
+                <ModalInput label="Lot No." placeholder="เลข Lot" />
+                <ModalInput label="SEQ (ลำดับ)" type="number" placeholder="0" />
+                <ModalInput label="วันที่ผลิต" type="date" isHighlight />
                 <ModalInput
                   label="น้ำหนักม้วน (KG)"
                   type="number"
@@ -822,11 +952,11 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                     placeholder="0.00"
                   />
                 </div>
-                <ModalSelect
+                {/* <ModalSelect
                   label="ประเภทกล่อง"
                   options={["กล่องไม่มีรู", "กล่องร่องพับไม่ได้"]}
                 />
-                <ModalSelect label="ลักษณะสินค้า" options={["กรอบ", "นิ่ม"]} />
+                <ModalSelect label="ลักษณะสินค้า" options={["กรอบ", "นิ่ม"]} /> */}
               </div>
 
               {/* Column 2: ปัญหาที่พบ (QC) */}
@@ -836,6 +966,10 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                 </h4>
                 <div className="grid grid-cols-1 gap-2">
                   {[
+                    "กล่องไม่มีรู",
+                    "กล่องร่องพับไม่ได้",
+                    "กรอบ",
+                    "นิ่ม",
                     "หน้ากว้างไม่เท่า",
                     "เป็นรอยยับ",
                     "ม้วนโฟมติด",
@@ -843,7 +977,7 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                     "ฟิล์มเคลือบไม่ติด",
                     "ฟิล์มมีรอยยับ",
                     "ฟิล์มเคลือบไม่ตรง",
-                    "การปิดฝาไม่ได้",
+                    "การปิดฝาได้",
                     "พบสิ่งแปลกปลอม",
                   ].map((issue) => (
                     <label
@@ -862,27 +996,63 @@ const MoldingDetail = ({ moldingData, onBack }) => {
                 </div>
               </div>
 
-              {/* Column 3: สรุปยอดม้วน */}
-              <div className="space-y-6 bg-slate-50 p-6 rounded-3xl h-fit border border-slate-200">
-                <h4 className="text-slate-800 font-black uppercase text-sm border-b border-slate-200 pb-2 text-center">
+              {/* Column 3: สรุปยอดม้วน พร้อมระบบคำนวณอัตโนมัติ */}
+              <div className="space-y-6 bg-slate-50 p-6 rounded-4xl h-fit border border-slate-200 shadow-inner">
+                <h4 className="text-slate-800 font-black uppercase text-xs border-b border-slate-200 pb-3 text-center tracking-widest">
                   สรุปผลผลิตม้วนนี้
                 </h4>
-                <ModalInput label="ผลผลิต A" type="number" placeholder="0" />
-                <ModalInput label="ผลผลิต B" type="number" placeholder="0" />
-                <ModalInput
-                  label="เสีย (SCRAP)"
-                  type="number"
-                  placeholder="0"
-                />
 
-                <div className="pt-4 border-t border-slate-200">
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
-                    หมายเหตุ / REMARK
+                <div className="space-y-4">
+                  <ModalInput
+                    label="ผลผลิต A"
+                    type="number"
+                    placeholder="0"
+                    value={formData.yieldA}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        yieldA: Number(e.target.value),
+                      })
+                    }
+                  />
+                  <ModalInput
+                    label="ผลผลิต B"
+                    type="number"
+                    placeholder="0"
+                    value={formData.yieldB}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        yieldB: Number(e.target.value),
+                      })
+                    }
+                  />
+                  <ModalInput
+                    label="เสีย (SCRAP)"
+                    type="number"
+                    placeholder="0"
+                  />
+                </div>
+
+                {/* ส่วนผลรวมอัตโนมัติ (แทนที่ Remark เดิม) */}
+                <div className="pt-6 border-t border-slate-200">
+                  <label className="text-[10px] font-black text-indigo-500 uppercase ml-1 tracking-[0.15em]">
+                    ผลผลิตรวม TOTAL (A+B)
                   </label>
-                  <textarea
-                    className="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold h-24 focus:ring-2 focus:ring-indigo-500 outline-none"
-                    placeholder="ระบุรายละเอียดเพิ่มเติม..."
-                  ></textarea>
+                  <div className="mt-2 relative group">
+                    <input
+                      readOnly
+                      type="text"
+                      className="w-full p-5 bg-indigo-600 border-none rounded-3xl text-white text-2xl font-black text-center shadow-lg shadow-indigo-100 outline-none cursor-default transition-transform"
+                      value={(
+                        Number(formData.yieldA || 0) +
+                        Number(formData.yieldB || 0)
+                      ).toLocaleString()}
+                    />
+                  </div>
+                  <p className="text-[9px] text-slate-400 font-bold mt-3 text-center uppercase tracking-tighter italic">
+                    * ระบบจะคำนวณยอดรวมชิ้นงานให้อัตโนมัติ
+                  </p>
                 </div>
               </div>
             </div>
@@ -907,15 +1077,34 @@ const MoldingDetail = ({ moldingData, onBack }) => {
 };
 
 // --- Helper Components ---
-const ModalInput = ({ label, isHighlight, ...props }) => (
+// const ModalInput = ({ label, isHighlight, ...props }) => (
+//   <div className="space-y-1">
+//     <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">
+//       {label}
+//     </label>
+//     <input
+//       className={`w-full p-3.5 border border-slate-200 rounded-2xl font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all ${isHighlight ? "bg-blue-50 border-blue-200 text-blue-700 shadow-inner" : "bg-white"}`}
+//       {...props}
+//     />
+//   </div>
+// );
+
+const ModalInput = ({ label, icon, ...props }) => (
   <div className="space-y-1">
-    <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-tighter">
+    <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
       {label}
     </label>
-    <input
-      className={`w-full p-3.5 border border-slate-200 rounded-2xl font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all ${isHighlight ? "bg-blue-50 border-blue-200 text-blue-700 shadow-inner" : "bg-white"}`}
-      {...props}
-    />
+    <div className="relative">
+      {icon && (
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300">
+          {icon}
+        </div>
+      )}
+      <input
+        {...props}
+        className={`w-full ${icon ? "pl-11" : "px-5"} py-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-sm text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all`}
+      />
+    </div>
   </div>
 );
 

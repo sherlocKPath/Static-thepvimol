@@ -81,6 +81,33 @@ function App() {
     },
   ]);
 
+  const [jobOrders] = useState([
+    {
+      id: "J104/0868",
+      date: "14-08-2025",
+      productCode: "PP-PL17",
+      quantity: 50000,
+    },
+    {
+      id: "J105/0868",
+      date: "15-08-2025",
+      productCode: "PP-PL18",
+      quantity: 30000,
+    },
+    {
+      id: "J106/0868",
+      date: "16-08-2025",
+      productCode: "PP-PL19",
+      quantity: 40000,
+    },
+    {
+      id: "J107/0868",
+      date: "17-08-2025",
+      productCode: "PT-PL17",
+      quantity: 25000,
+    },
+  ]);
+
   const addRequisition = (newData) => {
     const newEntry = { id: `REQ-00${requisitions.length + 1}`, ...newData };
     setRequisitions([newEntry, ...requisitions]);
@@ -116,6 +143,12 @@ function App() {
     setCurrentPage("molding"); // เปลี่ยนหน้าหลักเป็น Molding
   };
 
+  const handleCreateMaterialDetail = () => {
+    setSelectedRequisition(null); // เคลียร์ข้อมูลเดิม (เนื่องจากเป็นการสร้างใหม่)
+    setMaterialView("detail"); // สลับ View ของ Material เป็น detail
+    setCurrentPage("matlist"); // เปลี่ยนหน้าหลักเป็น matlist
+  };
+
   return (
     <div className="flex h-screen w-full bg-[#f8fafc] overflow-hidden font-sans">
       <Navbar
@@ -148,8 +181,10 @@ function App() {
 
             {currentPage === "jobs" && (
               <JobOrderInterface
+                jobOrders={jobOrders}
                 setCurrentPage={setCurrentPage}
                 setSelectedJob={setSelectedJob}
+                onCreateMaterial={handleCreateMaterialDetail}
               />
             )}
 
@@ -224,23 +259,28 @@ function App() {
                 <WriteoffRecord onBack={() => setWriteoffView("list")} />
               ))}
 
-            {/* --- UNPACK: สลับระหว่างตารางกับฟอร์ม --- */}
+            {/* --- UNPACK: สลับระหว่างหน้าตาราง (List) กับหน้าจัดการ (Mgmt) --- */}
             {currentPage === "unpack" &&
               (unpackView === "list" ? (
                 <ProductUnpack
                   setCurrentPage={(page) => {
-                    if (page === "unpack_form")
-                      setUnpackView("form"); // เมื่อกดปุ่ม "เพิ่ม"
-                    else setCurrentPage(page);
+                    if (page === "unpack_mgmt") {
+                      // ✅ เมื่อกดปุ่ม "เพิ่ม" ให้เปลี่ยน View ภายในหน้า Unpack
+                      setUnpackView("form");
+                    } else {
+                      // ถ้าเป็นหน้าอื่นค่อยเปลี่ยนหน้าหลัก
+                      setCurrentPage(page);
+                    }
                   }}
                 />
               ) : (
-                <UnpackRecord onBack={() => setUnpackView("list")} />
+                // ✅ ส่ง onBack กลับไปเป็น setUnpackView("list")
+                <ProductUnpackMgmt onBack={() => setUnpackView("list")} />
               ))}
 
-            {currentPage === "unpack_mgmt" && (
+            {/* {currentPage === "unpack_mgmt" && (
               <ProductUnpackMgmt setCurrentPage={setCurrentPage} />
-            )}
+            )} */}
 
             {currentPage === "warehouse" && (
               <WarehouseInbound

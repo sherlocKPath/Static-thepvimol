@@ -101,8 +101,8 @@ const WarehouseInbound = ({ setCurrentPage, inboundDate }) => {
                   <th className="px-4 py-4 text-[10px] uppercase w-48">
                     รหัสสินค้า
                   </th>
-                  <th className="px-4 py-4 text-[10px] text-center uppercase w-28">
-                    JOB NO.
+                  <th className="px-4 py-4 text-[10px] text-center w-28">
+                    Job No.
                   </th>
                   <th className="px-4 py-4 text-[10px] text-center uppercase w-20">
                     ที่จัดเก็บ
@@ -127,8 +127,8 @@ const WarehouseInbound = ({ setCurrentPage, inboundDate }) => {
                   <th className="px-4 py-4 text-[10px] text-center uppercase w-32 font-black text-blue-800 bg-blue-50/30 border-l-2 border-blue-200">
                     จำนวนชิ้น
                   </th>
-                  <th className="px-4 py-4 text-[10px] text-center uppercase w-20">
-                    Tools
+                  <th className="px-4 py-4 text-[10px] text-center w-20">
+                    Tool
                   </th>
                 </tr>
               </thead>

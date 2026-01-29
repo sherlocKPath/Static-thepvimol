@@ -11,6 +11,8 @@ import {
   ClipboardList,
   X,
   Save,
+  Edit3,
+  Package,
 } from "lucide-react";
 
 const MaterialDetail = ({
@@ -34,6 +36,8 @@ const MaterialDetail = ({
   const jobStatus =
     requisitionData?.jobOrderId === "J104/0868" ? "กำลังผลิต" : "เบิกวัตถุดิบ";
 
+  const jobOrderId = requisitionData?.jobOrderId || "J104/0868";
+
   const handleEditClick = (item) => {
     setEditingItem(item);
     setShowEditModal(true);
@@ -55,7 +59,7 @@ const MaterialDetail = ({
             <h1 className="text-xl font-bold text-slate-800 tracking-tight leading-none uppercase">
               Job Order No :{" "}
               <span className="text-blue-700">
-                {requisitionData?.jobOrderId || "N/A"}
+                {requisitionData?.jobOrderId || "J104/0868"}
               </span>
             </h1>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
@@ -71,55 +75,56 @@ const MaterialDetail = ({
         </button>
       </div>
 
-      <main className="max-w-7xl mx-auto p-6 lg:p-8 animate-in fade-in duration-500">
+      <main className="max-w-7xl mx-auto p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {/* --- 2. INFORMATION CARDS --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          {/* Job Information */}
           <InfoCard
-            title="Production Status"
+            title="Job Information"
             icon={<Settings size={18} className="text-blue-600" />}
+            onEdit={() => console.log("Edit Job Info")} // เพิ่มฟังก์ชัน Edit
           >
             <DetailRow
-              label="สถานะการผลิต"
-              value={jobStatus}
+              label="Job No."
+              value={jobOrderId || "J104/0868"}
               color={
                 jobStatus === "กำลังผลิต" ? "text-orange-600" : "text-blue-600"
               }
               isStrong
             />
             <DetailRow label="วันที่สั่งผลิต" value="14/08/2568" isStrong />
+            <DetailRow label="รหัสสินค้า" value="PP-PL17" isStrong />
+            <DetailRow label="จำนวนสั่งผลิต" value="50,000" isStrong />
           </InfoCard>
 
+          {/* Material Information (ปรับฟิลด์ตามสั่ง) */}
           <InfoCard
-            title="Production Specifications"
+            title="Material Information"
             icon={<Layers size={18} className="text-indigo-600" />}
+            onEdit={() => console.log("Edit Material Info")}
           >
-            <DetailRow
-              label="รหัสสินค้า"
-              value={requisitionData?.productCode}
-              isStrong
-            />
             <DetailRow
               label="รหัสวัตถุดิบ"
-              value={requisitionData?.materialId}
+              value={requisitionData?.materialId || "5B660055FB"}
               isStrong
             />
-            <DetailRow
-              label="วันที่ผลิต"
-              value={jobStatus === "กำลังผลิต" ? "15/08/2568" : "-"}
-            />
-            <DetailRow
-              label="รหัสเครื่องจักร"
-              value={jobStatus === "กำลังผลิต" ? "MC-VF-1" : "-"}
-            />
+            <DetailRow label="ม้วนยาว" value="500000" />
+            <DetailRow label="จำนวนม้วน" value="7 ม้วน" />
           </InfoCard>
 
+          {/* Item Specifications (ปรับฟิลด์ตามสั่ง) */}
           <InfoCard
-            title="Accountability"
-            icon={<User size={18} className="text-emerald-600" />}
+            title="Item Specifications"
+            icon={<Package size={18} className="text-emerald-600" />}
+            onEdit={() => console.log("Edit Item Specs")}
           >
-            <DetailRow label="ผู้เบิกวัตถุดิบ" value="ปฐมพร โตกล่ำ" isStrong />
-            <DetailRow label="แผนก" value="Production Supervisor." />
-            <DetailRow label="เบอร์ติดต่อ" value="062-492-2196" />
+            <DetailRow
+              label="กว้างxยาวxสูง"
+              value="208 x 263 x 36 mm"
+              isStrong
+            />
+            <DetailRow label="หนา (mm)" value="0.55 mm" />
+            <DetailRow label="น้ำหนัก" value="12.5 g" />
           </InfoCard>
         </div>
 
@@ -127,8 +132,7 @@ const MaterialDetail = ({
         <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden mb-10">
           <div className="bg-[#f1f3f5] px-8 py-4 border-b border-slate-300 flex justify-between items-center">
             <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wider flex items-center">
-              <Layers size={18} className="mr-2" /> รายการเบิกวัตถุดิบใน Job
-              Order
+              <Layers size={18} className="mr-2" /> รายการเบิกวัตถุดิบ
             </h3>
             <button
               onClick={() => setCurrentPage("requisition")}
@@ -140,7 +144,7 @@ const MaterialDetail = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="bg-slate-50 border-b border-slate-200">
-                <tr className="text-[11px] font-bold uppercase text-slate-500 divide-x divide-slate-200">
+                <tr className="text-[11px] font-bold text-slate-500 divide-x divide-slate-200">
                   <th className="px-6 py-4 text-center w-28">Tool</th>
                   <th className="px-4 py-4 text-center w-20">ลำดับที่</th>
                   <th className="px-6 py-4">รหัสวัตถุดิบ</th>
@@ -200,7 +204,7 @@ const MaterialDetail = ({
         </div>
 
         {/* --- 4. ADDITIONAL REMARKS --- */}
-        <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+        {/* <div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
           <div className="px-8 py-5 border-b border-slate-200 bg-slate-50/50 flex items-center space-x-3">
             <button className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:scale-90 transition-all shadow-md">
               <Plus size={16} />
@@ -223,7 +227,7 @@ const MaterialDetail = ({
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </main>
 
       {/* --- MODALS --- */}
@@ -239,21 +243,33 @@ const MaterialDetail = ({
 
 // --- Sub-components (Modal & Cards) ---
 
-const InfoCard = ({ title, icon, children }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-    <div className="flex items-center space-x-3 mb-4 border-b border-slate-100 pb-3">
-      {icon}
-      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-        {title}
-      </h4>
+const InfoCard = ({ title, icon, children, onEdit }) => (
+  <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md transition-all relative">
+    <div className="flex items-center justify-between mb-4 border-b border-slate-50 pb-3">
+      <div className="flex items-center space-x-3">
+        {icon}
+        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          {title}
+        </h4>
+      </div>
+
+      {/* เพิ่มปุ่ม Edit สไตล์เดียวกับบันทึกตั้งงาน */}
+      {onEdit && (
+        <button
+          onClick={onEdit}
+          className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:scale-90 transition-all shadow-md"
+        >
+          <Edit3 size={14} />
+        </button>
+      )}
     </div>
     <div className="space-y-3">{children}</div>
   </div>
 );
 
 const DetailRow = ({ label, value, isStrong, color = "text-slate-700" }) => (
-  <div className="flex flex-col">
-    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mb-0.5">
+  <div className="flex justify-between items-center group">
+    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
       {label}
     </span>
     <span

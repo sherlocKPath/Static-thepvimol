@@ -68,7 +68,7 @@ const UsersManagement = ({ onEditUser }) => {
   ]);
 
   const [showModal, setShowModal] = useState(false);
-  const [ selectedUser, setSelectedUser] = useState(null);
+  const [, setSelectedUser] = useState(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
 
   // Search States

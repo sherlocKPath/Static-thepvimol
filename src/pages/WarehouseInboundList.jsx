@@ -72,10 +72,10 @@ const WarehouseInboundList = ({ onNavigateToDetail }) => {
                 <tr className="divide-x divide-slate-200 text-slate-600">
                   <th className="px-6 py-4 text-xs uppercase tracking-wider">วันที่ส่งเข้าคลัง</th>
                   <th className="px-6 py-4 text-xs text-center uppercase tracking-wider">จำนวนตามรหัสสินค้า</th>
-                  <th className="px-6 py-4 text-center text-xs uppercase tracking-wider">จำนวนตาม Job No.</th>
+                  <th className="px-6 py-4 text-center text-xs tracking-wider">จำนวนตาม Job No.</th>
                   <th className="px-6 py-4 text-center text-xs uppercase tracking-wider font-black text-indigo-700">รวมยอด (กล่อง)</th>
                   <th className="px-6 py-4 text-center text-xs uppercase tracking-wider font-black text-blue-700 bg-blue-50/30">รวมจำนวนชิ้น</th>
-                  <th className="px-6 py-4 text-center text-xs uppercase tracking-wider w-32">Tools</th>
+                  <th className="px-6 py-4 text-center text-xs tracking-wider w-32">Tool</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-sm font-bold">

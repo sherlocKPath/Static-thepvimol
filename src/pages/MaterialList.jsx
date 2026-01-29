@@ -88,7 +88,7 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
         <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
           <div className="flex items-center space-x-2">
             <ClipboardList className="w-6 h-6 text-slate-500" />
-            <h1 className="text-xl font-semibold text-slate-700 uppercase tracking-tight">
+            <h1 className="text-xl font-semibold text-slate-700 tracking-tight">
               รายการเบิกวัตถุดิบ (Material List)
             </h1>
           </div>
@@ -109,7 +109,7 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
           >
             <div className="flex items-center space-x-2 text-slate-600 font-bold">
               <Search className="w-4 h-4 text-[#004a99]" />
-              <span className="text-sm font-bold">ค้นหารายการเบิก</span>
+              <span className="text-sm font-bold">ค้นหา</span>
             </div>
             {isSearchExpanded ? (
               <ChevronUp className="w-4 h-4" />
@@ -261,7 +261,7 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
               <thead className="bg-[#f1f3f5] border-b border-slate-300">
                 <tr className="divide-x divide-slate-300">
                   <th className="px-4 py-3 w-12"></th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 tracking-wider">
                     Job No.
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider">
@@ -273,10 +273,10 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-32">
                     เบิกรวม (ม้วน)
                   </th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider">
                     สถานะ
                   </th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-24">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-24">
                     Tool
                   </th>
                 </tr>
@@ -354,7 +354,7 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
                                   <th className="px-6 py-2.5 uppercase font-black">
                                     รหัสวัตถุดิบ
                                   </th>
-                                  <th className="px-6 py-2.5 uppercase font-black">
+                                  <th className="px-6 py-2.5 font-black">
                                     Lot No.
                                   </th>
                                   <th className="px-6 py-2.5 text-center uppercase font-black">
@@ -444,7 +444,7 @@ const MaterialList = ({ requisitions = [], setCurrentPage, onEdit }) => {
 // --- Helpers ---
 const SearchField = ({ label, ...props }) => (
   <div className="space-y-1">
-    <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+    <label className="text-xs font-bold text-slate-600 tracking-wider">
       {label}
     </label>
     <input

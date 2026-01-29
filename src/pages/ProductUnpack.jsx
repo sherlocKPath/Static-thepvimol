@@ -11,30 +11,28 @@ import {
   Trash2,
   RotateCcw,
   CheckSquare,
-  Calendar,
   Package,
-  Hash,
+  Clock,
 } from "lucide-react";
 
 const ProductUnpack = ({ setCurrentPage }) => {
-  // ปรับ Mock Up ให้รองรับหลาย Job และหลายรหัสสินค้าในบันทึกเดียว
+  // ข้อมูลจำลอง (Mock up)
   const [unpackRecords] = useState([
     {
-      id: "UPK-680815-001",
-      mfgDate: "15-08-68",
-      jobs: ["104/0868", "102/0868"], // เก็บเป็น Array เพราะมีได้หลายอัน
-      products: ["TB-0000PL17-00", "TB-0000PL17-01", "ABC-999"], // รหัสสินค้าทั้งหมดในใบนี้
+      id: "UPK-001",
+      mfgDate: "15-08-2568",
+      jobs: ["104/0868", "102/0868"],
+      products: ["TB-0000PL17-00", "TB-0000PL17-01"],
       shift: "B",
       totalPacks: 1016,
       totalUnits: 35560,
-      staffCount: 2,
-      dataBy: "Admin Staff",
+      staffCount: 7,
+      dataBy: "admin_staff",
+      updatedBy: "supervisor_01",
     },
   ]);
 
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-
-  // Search States แบบละเอียด
   const [tempSearch, setTempSearch] = useState({
     jobNo: "",
     productCode: "",
@@ -42,7 +40,6 @@ const ProductUnpack = ({ setCurrentPage }) => {
     date: "",
   });
   const [searchParams, setSearchParams] = useState({ ...tempSearch });
-
   const [currentPageIndex, setPageIndex] = useState(1);
   const itemsPerPage = 8;
 
@@ -81,68 +78,67 @@ const ProductUnpack = ({ setCurrentPage }) => {
     (currentPageIndex - 1) * itemsPerPage,
     currentPageIndex * itemsPerPage,
   );
+  const totalItems = filteredRecords.length;
   const totalPages = Math.ceil(filteredRecords.length / itemsPerPage);
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans">
       <main className="p-4 md:p-6 max-w-400 mx-auto animate-in fade-in duration-500">
-        {/* 1. Header Section */}
+        {/* --- 1. Header Section --- */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <div className="flex items-center space-x-3">
             <div className="bg-[#004a99] p-2.5 rounded-2xl shadow-lg text-white">
               <CheckSquare size={26} />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-slate-700 uppercase tracking-tight font-sans">
-                รายการสรุปการแกะสินค้า
+              <h1 className="text-xl font-bold text-slate-700 uppercase tracking-tight">
+                รายการบันทึกการแกะสินค้า
               </h1>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest font-sans">
-                Unpack Summary (Multi-Job Support)
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                Product Unpack Records List
               </p>
             </div>
           </div>
           <button
             onClick={() => setCurrentPage("unpack_mgmt")}
-            className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-6 py-2.5 rounded-xl shadow-md transition-all font-black text-xs active:scale-95 border-b-4 border-blue-900 uppercase"
+            className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-5 py-2.5 rounded-lg shadow-md transition-all font-medium text-sm active:scale-95 border-b-4 border-blue-900 uppercase"
           >
-            <Plus size={18} /> <span>เพิ่มบันทึกใหม่</span>
+            <Plus size={18} /> <span>เพิ่มบันทึกการแกะ</span>
           </button>
         </div>
 
-        {/* 2. Expandable Search Section */}
+        {/* --- 2. Advance Search Bar (ตามแบบ Molding) --- */}
         <div className="bg-[#e9ecef] rounded-t-xl overflow-hidden mb-0 border-x border-t border-slate-200 shadow-sm">
           <div
             onClick={() => setIsSearchExpanded(!isSearchExpanded)}
-            className="px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-slate-200/50 transition-colors"
+            className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-200/50 transition-colors"
           >
             <div className="flex items-center space-x-2 text-slate-600 font-bold">
-              <Search className="w-4 h-4 text-[#004a99]" />{" "}
-              <span className="text-xs tracking-tight uppercase font-sans">
-                Search Summary Filters
-              </span>
+              <Search size={18} className="text-[#004a99]" />
+              <span className="text-sm">ค้นหา</span>
             </div>
             {isSearchExpanded ? (
-              <ChevronUp className="w-4 h-4" />
+              <ChevronUp size={18} />
             ) : (
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown size={18} />
             )}
           </div>
 
           {isSearchExpanded && (
             <form
               onSubmit={handleSearchSubmit}
-              className="bg-white px-8 pb-8 pt-6 border-t border-slate-200 animate-in slide-in-from-top-2"
+              className="bg-white px-6 pb-6 pt-6 border-t border-slate-200 animate-in fade-in slide-in-from-top-1"
             >
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <SearchField
-                  label="Job Order No."
+                <SearchInput
+                  label="Job No."
                   value={tempSearch.jobNo}
                   onChange={(e) =>
                     setTempSearch({ ...tempSearch, jobNo: e.target.value })
                   }
                   placeholder="ระบุเลขที่ Job"
                 />
-                <SearchField
+                <SearchInput
                   label="รหัสสินค้า"
                   value={tempSearch.productCode}
                   onChange={(e) =>
@@ -154,22 +150,22 @@ const ProductUnpack = ({ setCurrentPage }) => {
                   placeholder="ระบุรหัสสินค้า"
                 />
                 <div className="space-y-2">
-                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1 font-sans">
-                    กะการทำงาน
+                  <label className="text-xs font-bold text-slate-600 tracking-wider">
+                    กะผลิต
                   </label>
                   <select
                     value={tempSearch.shift}
                     onChange={(e) =>
                       setTempSearch({ ...tempSearch, shift: e.target.value })
                     }
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-sm outline-none focus:ring-4 focus:ring-blue-500/10"
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 outline-none transition text-sm font-semibold"
                   >
                     <option value="">ทั้งหมด</option>
-                    <option value="A">กะ A (กลางวัน)</option>
-                    <option value="B">กะ B (กลางคืน)</option>
+                    <option value="A">กะ A (เช้า)</option>
+                    <option value="B">กะ B (ดึก)</option>
                   </select>
                 </div>
-                <SearchField
+                <SearchInput
                   label="วันที่ผลิต"
                   type="date"
                   value={tempSearch.date}
@@ -178,90 +174,92 @@ const ProductUnpack = ({ setCurrentPage }) => {
                   }
                 />
               </div>
-              <div className="flex justify-end mt-6 space-x-3">
+              <div className="flex justify-end mt-6 space-x-2">
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="px-6 py-2.5 text-slate-400 hover:text-slate-600 font-black text-[11px] uppercase tracking-widest transition-all"
+                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold flex items-center"
                 >
-                  ล้างค่า
+                  <RotateCcw size={16} className="mr-1" /> ล้างค่า
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center space-x-2 px-10 py-2.5 bg-[#004a99] text-white rounded-xl shadow-lg hover:bg-blue-800 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 border-b-4 border-blue-900"
+                  className="flex items-center space-x-2 px-8 py-2 bg-[#004a99] text-white rounded hover:bg-[#005580] transition shadow-sm text-sm font-bold"
                 >
-                  <Search size={14} /> <span>ค้นหาข้อมูล</span>
+                  <Search size={16} className="mr-1" /> ค้นหา
                 </button>
               </div>
             </form>
           )}
         </div>
 
-        {/* 3. Main Table Content */}
-        <div className="bg-white rounded-b-xl shadow-2xl overflow-hidden border border-slate-200">
-          <div className="overflow-x-auto font-sans">
+        {/* --- 3. Table Content (ตามโครงสร้าง Molding) --- */}
+        <div className="bg-white rounded-b-xl shadow-md overflow-hidden border border-slate-200">
+          <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-300">
-              <thead className="bg-[#f1f3f5] border-b border-slate-300 font-bold">
-                <tr className="divide-x divide-slate-300 text-[11px] uppercase text-slate-500">
-                  <th className="px-4 py-4 text-center w-16">No.</th>
-                  <th className="px-6 py-4 w-40">วันที่ผลิต</th>
-                  <th className="px-6 py-4 w-48">Job No. ที่เกี่ยวข้อง</th>
-                  <th className="px-6 py-4">รายละเอียดสินค้า</th>
-                  <th className="px-4 py-4 text-center w-24">กะ</th>
-                  <th className="px-4 py-4 text-center w-36 bg-blue-50/50 text-blue-700">
+              <thead>
+                <tr className="bg-[#f1f3f5] border-b border-slate-300 divide-x divide-slate-300">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-32">
+                    วันที่ผลิต
+                  </th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 tracking-wider">
+                    Job No. ที่เกี่ยวข้อง
+                  </th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
+                    รายละเอียดสินค้า
+                  </th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-24">
+                    กะ
+                  </th>
+                  <th className="px-4 py-3 text-xs font-bold text-blue-700 bg-blue-50/50 text-center tracking-wider w-32">
                     ห่อรวม
                   </th>
-                  <th className="px-4 py-4 text-center w-40 bg-emerald-50/50 text-emerald-700">
+                  <th className="px-4 py-3 text-xs font-bold text-emerald-700 bg-emerald-50/50 text-center tracking-wider w-36">
                     ชิ้นรวม
                   </th>
-                  <th className="px-4 py-4 text-center w-24">Tool</th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider w-44">
+                    ผู้บันทึก
+                  </th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-24">
+                    Tool
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 text-sm">
-                {currentItems.map((rec, index) => (
+              <tbody className="divide-y divide-slate-200 text-sm font-medium">
+                {currentItems.map((rec) => (
                   <tr
                     key={rec.id}
-                    className="hover:bg-blue-50/30 transition-colors divide-x divide-slate-100 font-semibold text-slate-700"
+                    className="hover:bg-blue-50/30 transition-colors divide-x divide-slate-100"
                   >
-                    <td className="px-4 py-4 text-center font-black text-slate-400">
-                      {(currentPageIndex - 1) * itemsPerPage + index + 1}
-                    </td>
-                    <td className="px-6 py-4 font-black text-slate-900">
+                    <td className="px-4 py-4 text-center text-slate-700 font-bold">
                       {rec.mfgDate}
                     </td>
-                    <td className="px-6 py-4">
-                      {/* แสดง Job No หลายรายการ */}
+                    <td className="px-4 py-4 font-bold text-blue-700">
                       <div className="flex flex-wrap gap-1">
                         {rec.jobs.map((job) => (
                           <span
                             key={job}
-                            className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded border border-blue-100 text-[10px] font-black uppercase tracking-tighter"
+                            className="bg-blue-50 px-2 py-0.5 rounded border border-blue-100 text-[10px] uppercase"
                           >
                             JOB: {job}
                           </span>
                         ))}
                       </div>
                     </td>
-                    <td className="px-6 py-4">
-                      {/* แสดง Product หลายรายการ */}
-                      <div className="space-y-1">
-                        {rec.products.map((p) => (
-                          <div
-                            key={p}
-                            className="text-[11px] font-bold text-slate-600 flex items-center"
-                          >
-                            <Package
-                              size={10}
-                              className="mr-1 text-slate-400"
-                            />{" "}
-                            {p}
-                          </div>
-                        ))}
-                      </div>
+                    <td className="px-4 py-4 text-slate-800">
+                      {rec.products.map((p) => (
+                        <div key={p} className="flex items-center text-xs mb-1">
+                          <Package
+                            size={12}
+                            className="mr-1.5 text-slate-400"
+                          />
+                          {p}
+                        </div>
+                      ))}
                     </td>
                     <td className="px-4 py-4 text-center">
                       <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-black border ${rec.shift === "A" ? "bg-orange-50 text-orange-600 border-orange-100" : "bg-indigo-50 text-indigo-600 border-indigo-100"}`}
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold border ${rec.shift === "A" ? "bg-orange-50 text-orange-600 border-orange-200" : "bg-indigo-50 text-indigo-600 border-indigo-200"}`}
                       >
                         กะ {rec.shift}
                       </span>
@@ -273,11 +271,19 @@ const ProductUnpack = ({ setCurrentPage }) => {
                       {rec.totalUnits.toLocaleString()}
                     </td>
                     <td className="px-4 py-4">
-                      <div className="flex justify-center space-x-1.5">
-                        <button className="p-2 bg-white hover:bg-blue-600 text-slate-400 hover:text-white rounded-lg transition-all border border-slate-200 shadow-sm active:scale-90">
+                      <div className="text-[11px] font-bold text-slate-700">
+                        {rec.dataBy}
+                      </div>
+                      <div className="text-[9px] text-slate-400 italic">
+                        Upd : {rec.updatedBy}
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button className="p-2 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white rounded-lg transition-all shadow-sm active:scale-90 border border-blue-100">
                           <Edit size={14} />
                         </button>
-                        <button className="p-2 bg-white hover:bg-red-600 text-slate-400 hover:text-white rounded-lg transition-all border border-slate-200 shadow-sm active:scale-90">
+                        <button className="p-2 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white rounded-lg transition-all shadow-sm active:scale-90 border border-red-100">
                           <Trash2 size={14} />
                         </button>
                       </div>
@@ -288,49 +294,62 @@ const ProductUnpack = ({ setCurrentPage }) => {
             </table>
           </div>
 
-          {/* 4. Pagination */}
-          <div className="px-8 py-5 bg-[#f8f9fa] border-t border-slate-200 flex items-center justify-between font-bold text-slate-500">
-            <div className="text-[11px] uppercase tracking-widest font-sans">
-              Showing {filteredRecords.length} Summary Entry
+          {/* --- 4. Pagination Section --- */}
+          {totalItems > 0 && (
+            <div className="px-6 py-4 bg-[#f8f9fa] border-t border-slate-200 flex items-center justify-between">
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                Showing {(currentPageIndex - 1) * itemsPerPage + 1} -{" "}
+                {Math.min(currentPageIndex * itemsPerPage, totalItems)} of{" "}
+                {totalItems} entries
+              </div>
+              <div className="flex items-center space-x-1">
+                <button
+                  onClick={() => setPageIndex((p) => Math.max(1, p - 1))}
+                  disabled={currentPageIndex === 1}
+                  className="p-2 border border-slate-300 rounded bg-white hover:bg-slate-50 disabled:opacity-40 transition shadow-sm"
+                >
+                  <ChevronLeft className="w-4 h-4 text-slate-600" />
+                </button>
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => setPageIndex(index + 1)}
+                    className={`w-8 h-8 text-xs font-bold rounded transition-all ${
+                      currentPageIndex === index + 1
+                        ? "bg-[#004a99] text-white shadow-md ring-2 ring-blue-100"
+                        : "text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() =>
+                    setPageIndex((p) => Math.min(totalPages, p + 1))
+                  }
+                  disabled={currentPageIndex === totalPages}
+                  className="p-2 border border-slate-300 rounded bg-white hover:bg-slate-50 disabled:opacity-40 transition shadow-sm"
+                >
+                  <ChevronRight className="w-4 h-4 text-slate-600" />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center space-x-1">
-              <button
-                disabled={currentPageIndex === 1}
-                onClick={() => setPageIndex((p) => p - 1)}
-                className="p-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 shadow-sm"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center text-xs rounded-xl bg-[#004a99] text-white shadow-lg ring-4 ring-blue-50">
-                {currentPageIndex}
-              </button>
-              <button
-                disabled={currentPageIndex === totalPages}
-                onClick={() => setPageIndex((p) => p + 1)}
-                className="p-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 shadow-sm"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
+          )}
         </div>
       </main>
     </div>
   );
 };
 
-// Reusable Search Field
-const SearchField = ({ label, ...props }) => (
-  <div className="space-y-2 group">
-    <label className="block text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1 font-sans transition-colors group-focus-within:text-[#004a99]">
+const SearchInput = ({ label, ...props }) => (
+  <div className="space-y-2">
+    <label className="text-xs font-bold text-slate-600 tracking-wider">
       {label}
     </label>
-    <div className="relative">
-      <input
-        {...props}
-        className="w-full px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-sm text-slate-600 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#004a99] transition-all font-sans"
-      />
-    </div>
+    <input
+      {...props}
+      className="w-full px-3 py-2 bg-white border border-slate-300 rounded focus:border-blue-500 outline-none transition text-sm font-semibold"
+    />
   </div>
 );
 
