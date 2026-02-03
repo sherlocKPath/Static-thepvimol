@@ -146,7 +146,7 @@ const MasterMachines = () => {
             <div className="flex items-center space-x-2 text-slate-600">
               <Search className="w-4 h-4 text-[#004a99]" />
               <span className="text-sm font-bold tracking-tight">
-                ค้นหาเครื่องจักร
+                ค้นหา
               </span>
             </div>
             {isSearchExpanded ? (
@@ -164,7 +164,7 @@ const MasterMachines = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-600 uppercase tracking-tight">
-                    Machine Code
+                    รหัสเครื่องจักร
                   </label>
                   <input
                     name="machineCode"
@@ -182,7 +182,7 @@ const MasterMachines = () => {
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-600 uppercase tracking-tight">
-                    Machine Type
+                    ประเภทเครื่องจักร
                   </label>
                   <select
                     name="type"
@@ -226,8 +226,8 @@ const MasterMachines = () => {
                   <th className="px-4 py-3 text-xs text-slate-600 text-center uppercase tracking-wider w-20">
                     ลำดับ
                   </th>
-                  <th className="px-4 py-3 text-xs text-slate-600 uppercase tracking-wider">
-                    Machine Code
+                  <th className="px-4 py-3 text-xs text-slate-600 tracking-wider">
+                    รหัสเครื่องจักร
                   </th>
                   <th className="px-4 py-3 text-xs text-slate-600 uppercase tracking-wider">
                     ประเภท
@@ -241,7 +241,7 @@ const MasterMachines = () => {
                   <th className="px-4 py-3 text-xs text-slate-600 text-center uppercase tracking-wider w-32">
                     สถานะ
                   </th>
-                  <th className="px-4 py-3 text-xs text-slate-600 text-center uppercase tracking-wider w-24">
+                  <th className="px-4 py-3 text-xs text-slate-600 text-center tracking-wider w-24">
                     Tool
                   </th>
                 </tr>
@@ -414,10 +414,8 @@ const MasterMachines = () => {
                 <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
                   รหัสสินค้าที่รองรับ
                 </label>
-                <input
-                  type="text"
-                  placeholder="ระบุรหัสสินค้า (เช่น PL17, PL18)"
-                  className="w-full p-3.5 border border-slate-200 rounded-2xl font-bold text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                <select
+                  className="w-full p-3.5 border border-slate-200 rounded-2xl font-bold text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   /* 3. เชื่อมข้อมูลรหัสสินค้า */
                   value={selectedMachine?.supportProduct || ""}
                   onChange={(e) =>
@@ -426,7 +424,12 @@ const MasterMachines = () => {
                       supportProduct: e.target.value,
                     })
                   }
-                />
+                >
+                  <option value="">เลือกรหัสสินค้า...</option>
+                  <option value="PL17">PL17</option>
+                  <option value="PL18">PL18</option>
+                  <option value="PL19">PL19</option>
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

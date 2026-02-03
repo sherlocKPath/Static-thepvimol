@@ -253,14 +253,14 @@ const UsersManagement = ({ onEditUser }) => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#f1f3f5] border-b border-slate-300 font-bold">
-                <tr className="divide-x divide-slate-300 text-[11px] uppercase text-slate-600">
-                  <th className="px-4 py-3 text-center w-24">Tool</th>
+                <tr className="divide-x divide-slate-300 text-[11px] text-slate-600">
                   <th className="px-4 py-3">Username</th>
                   <th className="px-4 py-3">Role</th>
                   <th className="px-4 py-3">Full Name</th>
                   <th className="px-4 py-3">Email</th>
                   <th className="px-4 py-3 text-center">Status</th>
                   <th className="px-4 py-3 text-center">Login Attempt</th>
+                  <th className="px-4 py-3 text-center w-24">Tool</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 text-sm">
@@ -269,22 +269,6 @@ const UsersManagement = ({ onEditUser }) => {
                     key={user.id}
                     className="hover:bg-blue-50/30 transition-colors divide-x divide-slate-100 font-semibold text-slate-700"
                   >
-                    <td className="px-4 py-3">
-                      <div className="flex justify-center space-x-2">
-                        {/* ปุ่ม Edit: แก้ไขให้เรียกใช้ onEditUser พร้อมส่งข้อมูล user คนนั้นไป */}
-                        <button
-                          onClick={() => onEditUser(user)}
-                          className="p-2 bg-blue-50 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-all border border-blue-200 active:scale-90"
-                          title="Edit User Profile"
-                        >
-                          <Edit size={14} />
-                        </button>
-
-                        <button className="p-2 bg-red-50 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-all border border-red-200 active:scale-90">
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
                     <td className="px-4 py-3 font-bold text-slate-900">
                       {user.username}
                     </td>
@@ -310,6 +294,22 @@ const UsersManagement = ({ onEditUser }) => {
                     </td>
                     <td className="px-4 py-3 text-center font-black text-slate-400">
                       {user.loginAttempt}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center space-x-2">
+                        {/* ปุ่ม Edit: แก้ไขให้เรียกใช้ onEditUser พร้อมส่งข้อมูล user คนนั้นไป */}
+                        <button
+                          onClick={() => onEditUser(user)}
+                          className="p-2 bg-blue-50 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-all border border-blue-200 active:scale-90"
+                          title="Edit User Profile"
+                        >
+                          <Edit size={14} />
+                        </button>
+
+                        <button className="p-2 bg-red-50 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-all border border-red-200 active:scale-90">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

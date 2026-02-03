@@ -231,9 +231,6 @@ const StaffManagement = () => {
             <table className="w-full text-left border-collapse">
               <thead className="bg-[#f1f3f5] border-b border-slate-300 font-bold">
                 <tr className="divide-x divide-slate-300">
-                  <th className="px-4 py-3 text-xs text-slate-600 text-center uppercase tracking-wider w-24">
-                    Tool
-                  </th>
                   <th className="px-4 py-3 text-xs text-slate-600 uppercase tracking-wider">
                     ชื่อ - นามสกุล
                   </th>
@@ -243,11 +240,14 @@ const StaffManagement = () => {
                   <th className="px-4 py-3 text-xs text-slate-600 text-center uppercase tracking-wider">
                     เบอร์โทรศัพท์
                   </th>
-                  <th className="px-4 py-3 text-xs text-slate-600 text-center uppercase tracking-wider">
+                  {/* <th className="px-4 py-3 text-xs text-slate-600 text-center uppercase tracking-wider">
                     Line ID
-                  </th>
+                  </th> */}
                   <th className="px-4 py-3 text-xs text-slate-600 text-center uppercase tracking-wider w-32">
                     สถานะ
+                  </th>
+                  <th className="px-4 py-3 text-xs text-slate-600 text-center tracking-wider w-24">
+                    Tool
                   </th>
                 </tr>
               </thead>
@@ -257,16 +257,6 @@ const StaffManagement = () => {
                     key={staff.id}
                     className="hover:bg-blue-50/30 transition-colors divide-x divide-slate-100"
                   >
-                    <td className="px-4 py-4">
-                      <div className="flex justify-center space-x-2">
-                        <button className="p-2 bg-blue-50 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-all border border-blue-200 shadow-sm active:scale-90">
-                          <Edit size={14} />
-                        </button>
-                        <button className="p-2 bg-red-50 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-all border border-red-200 shadow-sm active:scale-90">
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center space-x-3">
                         <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 font-bold text-xs uppercase shadow-inner border border-white">
@@ -283,9 +273,9 @@ const StaffManagement = () => {
                     <td className="px-4 py-4 text-center font-bold text-blue-700">
                       {staff.phone}
                     </td>
-                    <td className="px-4 py-4 text-center text-slate-500 font-medium">
+                    {/* <td className="px-4 py-4 text-center text-slate-500 font-medium">
                       {staff.lineId}
-                    </td>
+                    </td> */}
                     <td className="px-4 py-4 text-center">
                       <span
                         className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
@@ -296,6 +286,16 @@ const StaffManagement = () => {
                       >
                         {staff.status}
                       </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex justify-center space-x-2">
+                        <button className="p-2 bg-blue-50 hover:bg-blue-600 text-blue-500 hover:text-white rounded-lg transition-all border border-blue-200 shadow-sm active:scale-90">
+                          <Edit size={14} />
+                        </button>
+                        <button className="p-2 bg-red-50 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-all border border-red-200 shadow-sm active:scale-90">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -446,7 +446,7 @@ const StaffManagement = () => {
                     })
                   }
                 />
-                <ModalInput
+                {/* <ModalInput
                   label="Line ID"
                   placeholder="ระบุ Line ID"
                   value={selectedStaff?.lineId || ""}
@@ -456,7 +456,7 @@ const StaffManagement = () => {
                       lineId: e.target.value,
                     })
                   }
-                />
+                /> */}
               </div>
 
               {/* แถวที่ 5: สถานะพนักงาน (Active/Inactive) */}

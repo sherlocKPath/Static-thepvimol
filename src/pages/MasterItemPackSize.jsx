@@ -20,6 +20,7 @@ const MasterItemPackSize = () => {
     {
       id: 1,
       productCode: "PP-PL17 FB",
+      packsizeName: "กล่อง",
       pcsPerFrame: 8,
       pcsPerPack: 50,
       packsPerBox: 20,
@@ -30,6 +31,7 @@ const MasterItemPackSize = () => {
     {
       id: 2,
       productCode: "PP-PL18 BK",
+      packsizeName: "ลัง",
       pcsPerFrame: 8,
       pcsPerPack: 25,
       packsPerBox: 40,
@@ -40,6 +42,7 @@ const MasterItemPackSize = () => {
     {
       id: 3,
       productCode: "PT-PL17 FB",
+      packsizeName: "กล่อง",
       pcsPerFrame: 6,
       pcsPerPack: 100,
       packsPerBox: 10,
@@ -50,6 +53,7 @@ const MasterItemPackSize = () => {
     {
       id: 4,
       productCode: "BK-SPECIAL-01",
+      packsizeName: "ลัง",
       pcsPerFrame: 4,
       pcsPerPack: 10,
       packsPerBox: 50,
@@ -134,7 +138,7 @@ const MasterItemPackSize = () => {
           >
             <div className="flex items-center space-x-2 text-slate-600 font-bold">
               <Search className="w-4 h-4 text-[#004a99]" />{" "}
-              <span className="text-sm">ค้นหารหัสสินค้า</span>
+              <span className="text-sm">ค้นหา</span>
             </div>
             {isSearchExpanded ? (
               <ChevronUp className="w-4 h-4" />
@@ -150,7 +154,7 @@ const MasterItemPackSize = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-600 uppercase">
-                    Product Code
+                    รหัสสินค้า
                   </label>
                   <input
                     type="text"
@@ -192,21 +196,24 @@ const MasterItemPackSize = () => {
                     ลำดับ
                   </th>
                   <th className="px-4 py-3 text-slate-600 uppercase">
-                    รหัสสินค้า (Product Code)
+                    รหัสสินค้า
+                  </th>
+                  <th className="px-4 py-3 text-slate-600">
+                    Pack Size Name
                   </th>
                   <th className="px-4 py-3 text-slate-600 text-center uppercase">
-                    ชิ้น/ห่อ
+                    จำนวน
                   </th>
-                  <th className="px-4 py-3 text-slate-600 text-center uppercase">
+                  {/* <th className="px-4 py-3 text-slate-600 text-center uppercase">
                     ห่อ/กล่อง
-                  </th>
+                  </th> */}
                   <th className="px-4 py-3 text-slate-600 text-center uppercase">
                     รวมชิ้น/กล่อง
                   </th>
                   <th className="px-4 py-3 text-slate-600 text-center uppercase">
                     น้ำหนักมาตรฐาน
                   </th>
-                  <th className="px-4 py-3 text-slate-600 text-center w-24 uppercase">
+                  <th className="px-4 py-3 text-slate-600 text-center w-24">
                     Tool
                   </th>
                 </tr>
@@ -223,10 +230,13 @@ const MasterItemPackSize = () => {
                     <td className="px-4 py-4 font-bold text-blue-700">
                       {item.productCode}
                     </td>
-                    <td className="px-4 py-4 text-center">{item.pcsPerPack}</td>
-                    <td className="px-4 py-4 text-center">
-                      {item.packsPerBox}
+                    <td className="px-4 py-4 font-bold text-blue-700">
+                      {item.packsizeName}
                     </td>
+                    <td className="px-4 py-4 text-center">{item.pcsPerPack}</td>
+                    {/* <td className="px-4 py-4 text-center">
+                      {item.packsPerBox}
+                    </td> */}
                     <td className="px-4 py-4 text-center bg-slate-50/50 font-black text-slate-900">
                       {item.totalPerBox.toLocaleString()}
                     </td>
@@ -301,17 +311,38 @@ const MasterItemPackSize = () => {
               </button>
             </div>
             <div className="p-8 space-y-5">
-              <ModalInput
-                label="รหัสสินค้า (Product Code)"
-                value={selectedItem?.productCode}
-                onChange={(e) =>
-                  setSelectedItem({
-                    ...selectedItem,
-                    productCode: e.target.value,
-                  })
-                }
-                placeholder="ตัวอย่าง: PP-PL17 FB"
-              />
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                  รหัสสินค้า (Product Code)
+                </label>
+                <div className="relative group">
+                  <select
+                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-sm text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all appearance-none cursor-pointer"
+                    value={selectedItem?.productCode || ""}
+                    onChange={(e) =>
+                      setSelectedItem({
+                        ...selectedItem,
+                        productCode: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="" disabled>
+                      เลือกรายการรหัสสินค้า
+                    </option>
+                    {/* รายการ Mock up รหัสสินค้า */}
+                    <option value="PP-PL17 FB">PP-PL17 FB</option>
+                    <option value="PP-PL18 BK">PP-PL18 BK</option>
+                    <option value="PET-H00P L17">
+                      PET-H00P L17
+                    </option>
+                    <option value="ABC-999">ABC-999</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-blue-500 transition-colors">
+                    <ChevronDown size={18} />
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <ModalInput
                   label="จำนวนชิ้นต่อห่อ"
