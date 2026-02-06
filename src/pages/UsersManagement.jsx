@@ -70,6 +70,7 @@ const UsersManagement = ({ onEditUser }) => {
   const [showModal, setShowModal] = useState(false);
   const [, setSelectedUser] = useState(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [isActive, setIsActive] = useState(true);
 
   // Search States
   const [tempSearch, setTempSearch] = useState({
@@ -162,7 +163,7 @@ const UsersManagement = ({ onEditUser }) => {
             <div className="flex items-center space-x-2 text-slate-600 font-bold">
               <Search className="w-4 h-4 text-[#004a99]" />{" "}
               <span className="text-sm tracking-tight uppercase">
-                Search User
+                ค้นหา
               </span>
             </div>
             {isSearchExpanded ? (
@@ -233,9 +234,9 @@ const UsersManagement = ({ onEditUser }) => {
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="px-6 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition text-sm font-bold"
+                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold flex items-center active:scale-95"
                 >
-                  ล้างค่า
+                  <RotateCcw className="w-4 h-4 mr-1" /> ล้างค่า
                 </button>
                 <button
                   type="submit"
@@ -412,10 +413,27 @@ const UsersManagement = ({ onEditUser }) => {
                     <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
                       Initial Status
                     </label>
-                    <select className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-sm outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                    </select>
+
+                    <div
+                      onClick={() => setIsActive(!isActive)}
+                      className="flex items-center justify-between w-full p-3 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100 transition-all group"
+                    >
+                      {/* ข้อความสถานะด้านซ้าย */}
+                      <span className={`text-sm font-bold ml-1 transition-colors ${isActive ? "text-emerald-600" : "text-slate-500"}`}>
+                        {isActive ? "Active" : "Inactive"}
+                      </span>
+
+                      {/* ตัวปุ่ม Toggle ด้านขวา */}
+                      <div
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${isActive ? "bg-emerald-500" : "bg-slate-300"
+                          }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-300 ${isActive ? "translate-x-6" : "translate-x-1"
+                            }`}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -429,7 +447,7 @@ const UsersManagement = ({ onEditUser }) => {
                 ยกเลิก
               </button>
               <button className="flex-1 py-4 bg-[#004a99] text-white font-black rounded-2xl shadow-xl active:scale-95 border-b-4 border-blue-900 flex items-center justify-center space-x-2">
-                <Save size={18} /> <span>ยืนยันข้อมูล</span>
+                <Save size={18} /> <span>บันทึกข้อมูล</span>
               </button>
             </div>
           </div>
@@ -441,7 +459,7 @@ const UsersManagement = ({ onEditUser }) => {
 
 const SearchField = ({ label, ...props }) => (
   <div className="space-y-2">
-    <label className="text-xs font-bold text-slate-600 uppercase">
+    <label className="text-xs font-bold text-slate-600">
       {label}
     </label>
     <input

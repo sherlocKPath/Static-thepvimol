@@ -80,8 +80,8 @@ const PermissionSettings = ({ role, onBack }) => {
               </p>
             </div>
           </div>
-          <button className="flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 text-white px-10 py-3.5 rounded-2xl shadow-xl transition-all font-black text-sm active:scale-95 border-b-4 border-emerald-700">
-            <Save size={18} /> <span>Save Changes</span>
+          <button className="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-10 py-3.5 rounded-2xl shadow-xl transition-all font-black text-sm active:scale-95 border-b-4 border-blue-700">
+            <Save size={18} /> <span>บันทึกข้อมูล</span>
           </button>
         </div>
 

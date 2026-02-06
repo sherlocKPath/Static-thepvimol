@@ -109,7 +109,7 @@ const RolesManagement = ({ onEditRole }) => {
             <div className="flex items-center space-x-2 text-slate-600 font-bold">
               <Search className="w-4 h-4 text-[#004a99]" />
               <span className="text-sm tracking-tight uppercase">
-                Search Role
+                ค้นหา
               </span>
             </div>
             {isSearchExpanded ? (
@@ -137,9 +137,9 @@ const RolesManagement = ({ onEditRole }) => {
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="px-6 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition text-sm font-bold"
+                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold flex items-center active:scale-95"
                 >
-                  ล้างค่า
+                  <RotateCcw className="w-4 h-4 mr-1" /> ล้างค่า
                 </button>
                 <button
                   type="submit"
@@ -235,8 +235,8 @@ const RolesManagement = ({ onEditRole }) => {
             <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-[#004a99] text-white">
               <div className="flex items-center space-x-3">
                 <ShieldCheck size={24} />
-                <h3 className="text-lg font-black uppercase tracking-tight">
-                  เพิ่มบทบาทใหม่ (Add Role)
+                <h3 className="text-lg font-black tracking-tight">
+                  เพิ่มบทบาทใหม่
                 </h3>
               </div>
               <button
@@ -298,7 +298,7 @@ const RolesManagement = ({ onEditRole }) => {
                 ยกเลิก
               </button>
               <button className="flex-1 py-3.5 bg-[#004a99] text-white font-black rounded-xl shadow-lg active:scale-95 border-b-4 border-blue-900 flex items-center justify-center space-x-2 text-xs">
-                <Save size={16} /> <span>Save Role</span>
+                <Save size={16} /> <span>บันทึกข้อมูล</span>
               </button>
             </div>
           </div>

@@ -139,10 +139,10 @@ const ProductMolding = ({ onAddNew, onEdit }) => {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-slate-700 uppercase tracking-tight">
-                รายการบันทึกการขึ้นรูปสินค้า
+                รายการบันทึกขึ้นรูปสินค้า
               </h1>
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                Molding Production Records List
+                Molding Production Records
               </p>
             </div>
           </div>

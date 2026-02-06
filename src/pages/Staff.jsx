@@ -13,6 +13,7 @@ import {
   ChevronUp,
   UserCircle,
   Edit,
+  RotateCcw,
 } from "lucide-react";
 
 const StaffManagement = () => {
@@ -64,6 +65,7 @@ const StaffManagement = () => {
     status: "",
   });
   const [searchParams, setSearchParams] = useState({ ...tempSearch });
+  const [isActive, setIsActive] = useState(true);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -125,7 +127,7 @@ const StaffManagement = () => {
             <div className="flex items-center space-x-2 text-slate-600">
               <Search className="w-4 h-4 text-[#004a99]" />
               <span className="text-sm font-bold tracking-tight">
-                ค้นหาพนักงาน
+                ค้นหา
               </span>
             </div>
             {isSearchExpanded ? (
@@ -210,9 +212,9 @@ const StaffManagement = () => {
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="px-6 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition text-sm font-bold active:scale-95"
+                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold flex items-center active:scale-95"
                 >
-                  ล้างค่า
+                  <RotateCcw className="w-4 h-4 mr-1" /> ล้างค่า
                 </button>
                 <button
                   type="submit"
@@ -460,36 +462,32 @@ const StaffManagement = () => {
               </div>
 
               {/* แถวที่ 5: สถานะพนักงาน (Active/Inactive) */}
-                <div className="space-y-1 pt-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">สถานะปัจจุบัน (Staff Status)</label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedStaff({...selectedStaff, status: "Active"})}
-                      className={`py-3.5 rounded-2xl font-bold text-sm transition-all border-2 flex items-center justify-center space-x-2 ${
-                        selectedStaff?.status === "Active" 
-                        ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm" 
-                        : "bg-white border-slate-100 text-slate-400 hover:border-slate-200"
-                      }`}
+                <div className="space-y-1">
+                    <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
+                      สถานะพนักงาน
+                    </label>
+
+                    <div
+                      onClick={() => setIsActive(!isActive)}
+                      className="flex items-center justify-between w-full p-3 bg-slate-50 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-100 transition-all group"
                     >
-                      <div className={`w-2 h-2 rounded-full ${selectedStaff?.status === "Active" ? "bg-emerald-500 animate-pulse" : "bg-slate-300"}`} />
-                      <span>พร้อมทำงาน (Active)</span>
-                    </button>
-                    
-                    <button
-                      type="button"
-                      onClick={() => setSelectedStaff({...selectedStaff, status: "Inactive"})}
-                      className={`py-3.5 rounded-2xl font-bold text-sm transition-all border-2 flex items-center justify-center space-x-2 ${
-                        selectedStaff?.status === "Inactive" 
-                        ? "bg-slate-100 border-slate-400 text-slate-700 shadow-sm" 
-                        : "bg-white border-slate-100 text-slate-400 hover:border-slate-200"
-                      }`}
-                    >
-                      <div className={`w-2 h-2 rounded-full ${selectedStaff?.status === "Inactive" ? "bg-slate-500" : "bg-slate-300"}`} />
-                      <span>ไม่พร้อมทำงาน (Inactive)</span>
-                    </button>
+                      {/* ข้อความสถานะด้านซ้าย */}
+                      <span className={`text-sm font-bold ml-1 transition-colors ${isActive ? "text-emerald-600" : "text-slate-500"}`}>
+                        {isActive ? "Active" : "Inactive"}
+                      </span>
+
+                      {/* ตัวปุ่ม Toggle ด้านขวา */}
+                      <div
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${isActive ? "bg-emerald-500" : "bg-slate-300"
+                          }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-300 ${isActive ? "translate-x-6" : "translate-x-1"
+                            }`}
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
             </div>
 
             {/* Footer Buttons */}

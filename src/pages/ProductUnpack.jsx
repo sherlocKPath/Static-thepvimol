@@ -13,6 +13,8 @@ import {
   CheckSquare,
   Package,
   Clock,
+  X,
+  Calendar,
 } from "lucide-react";
 
 const ProductUnpack = ({ setCurrentPage }) => {
@@ -21,6 +23,8 @@ const ProductUnpack = ({ setCurrentPage }) => {
     {
       id: "UPK-001",
       mfgDate: "15-08-2568",
+      starttime: "7:00",
+      endtime: "19:00",
       jobs: ["104/0868", "102/0868"],
       products: ["TB-0000PL17-00", "TB-0000PL17-01"],
       shift: "B",
@@ -31,6 +35,20 @@ const ProductUnpack = ({ setCurrentPage }) => {
       updatedBy: "supervisor_01",
     },
   ]);
+
+  const [isTimeModalOpen, setIsTimeModalOpen] = useState(false);
+  const [initialData, setInitialData] = useState({
+    date: new Date().toISOString().split("T")[0], // ค่าเริ่มต้นเป็นวันนี้
+    startTime: "08:00",
+    endTime: "17:00",
+  });
+
+  const handleCreateRecord = () => {
+    // ตรงนี้สามารถส่ง initialData ไปยังหน้าถัดไปผ่าน Context หรือ State Management ได้
+    console.log("สร้างรายการใหม่ช่วงเวลา:", initialData);
+    setIsTimeModalOpen(false);
+    setCurrentPage("unpack_mgmt"); // ไปหน้าจัดการต่อ
+  };
 
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [tempSearch, setTempSearch] = useState({
@@ -92,15 +110,15 @@ const ProductUnpack = ({ setCurrentPage }) => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-700 uppercase tracking-tight">
-                รายการบันทึกการแกะสินค้า
+                รายการบันทึกสรุปแกะสินค้า
               </h1>
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                Product Unpack Records List
+                Product Unpack Records
               </p>
             </div>
           </div>
           <button
-            onClick={() => setCurrentPage("unpack_mgmt")}
+            onClick={() => setIsTimeModalOpen(true)}
             className="flex items-center space-x-2 bg-[#004a99] hover:bg-[#003366] text-white px-5 py-2.5 rounded-lg shadow-md transition-all font-medium text-sm active:scale-95 border-b-4 border-blue-900 uppercase"
           >
             <Plus size={18} /> <span>เพิ่มบันทึกการแกะ</span>
@@ -166,7 +184,7 @@ const ProductUnpack = ({ setCurrentPage }) => {
                   </select>
                 </div>
                 <SearchInput
-                  label="วันที่ผลิต"
+                  label="วันที่แกะสินค้า"
                   type="date"
                   value={tempSearch.date}
                   onChange={(e) =>
@@ -200,22 +218,22 @@ const ProductUnpack = ({ setCurrentPage }) => {
               <thead>
                 <tr className="bg-[#f1f3f5] border-b border-slate-300 divide-x divide-slate-300">
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-32">
-                    วันที่ผลิต
+                    วันที่แกะสินค้า
+                  </th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center uppercase tracking-wider w-40">
+                    เวลาแกะ
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 tracking-wider">
-                    Job No. ที่เกี่ยวข้อง
+                    Job No.
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider">
-                    รายละเอียดสินค้า
-                  </th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 text-center tracking-wider w-24">
-                    กะ
+                    รหัสสินค้า
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-blue-700 bg-blue-50/50 text-center tracking-wider w-32">
-                    ห่อรวม
+                    รวมห่อ
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-emerald-700 bg-emerald-50/50 text-center tracking-wider w-36">
-                    ชิ้นรวม
+                    รวมชิ้น
                   </th>
                   <th className="px-4 py-3 text-xs font-bold text-slate-600 uppercase tracking-wider w-44">
                     ผู้บันทึก
@@ -233,6 +251,14 @@ const ProductUnpack = ({ setCurrentPage }) => {
                   >
                     <td className="px-4 py-4 text-center text-slate-700 font-bold">
                       {rec.mfgDate}
+                    </td>
+                    <td className="px-4 py-4 text-center">
+                      <div className="inline-flex items-center space-x-1 px-2 py-1 bg-slate-100 rounded-lg font-black text-slate-600 text-[11px]">
+                        <Clock size={12} className="text-indigo-600" />
+                        <span>
+                          {rec.starttime}-{rec.endtime} น.
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-4 font-bold text-blue-700">
                       <div className="flex flex-wrap gap-1">
@@ -257,13 +283,13 @@ const ProductUnpack = ({ setCurrentPage }) => {
                         </div>
                       ))}
                     </td>
-                    <td className="px-4 py-4 text-center">
+                    {/* <td className="px-4 py-4 text-center">
                       <span
                         className={`px-3 py-1 rounded-full text-[10px] font-bold border ${rec.shift === "A" ? "bg-orange-50 text-orange-600 border-orange-200" : "bg-indigo-50 text-indigo-600 border-indigo-200"}`}
                       >
                         กะ {rec.shift}
                       </span>
-                    </td>
+                    </td> */}
                     <td className="px-4 py-4 text-center font-black text-blue-700 text-base bg-blue-50/10">
                       {rec.totalPacks.toLocaleString()}
                     </td>
@@ -336,6 +362,99 @@ const ProductUnpack = ({ setCurrentPage }) => {
             </div>
           )}
         </div>
+
+        {/* --- 5. Modal สำหรับเลือกวันที่และเวลา (เด้งขึ้นมาหลังกดปุ่มเพิ่ม) --- */}
+        {isTimeModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-white animate-in zoom-in-95 duration-300">
+              {/* Modal Header */}
+              <div className="bg-[#004a99] p-6 text-white flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-white/20 p-2 rounded-xl">
+                    <Clock size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg tracking-tight">
+                      วันที่แกะสินค้าและเวลาดำเนินการ
+                    </h3>
+                    <p className="text-[10px] text-blue-100 uppercase font-black tracking-widest">
+                      Select Operation Time
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsTimeModalOpen(false)}
+                  className="hover:bg-black/10 p-2 rounded-full transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-8 space-y-6">
+                {/* เลือกวันที่ */}
+                <div className="space-y-2">
+                  <label className="flex items-center text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">
+                    <Calendar size={14} className="mr-2 text-[#004a99]" />{" "}
+                    วันที่ดำเนินการ
+                  </label>
+                  <input
+                    type="date"
+                    value={initialData.date}
+                    onChange={(e) =>
+                      setInitialData({ ...initialData, date: e.target.value })
+                    }
+                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-[#004a99] transition-all"
+                  />
+                </div>
+
+                {/* เลือกเวลา (จาก - ถึง) */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                      เริ่มเวลา
+                    </label>
+                    <input
+                      type="time"
+                      value={initialData.startTime}
+                      onChange={(e) =>
+                        setInitialData({
+                          ...initialData,
+                          startTime: e.target.value,
+                        })
+                      }
+                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:border-[#004a99] transition-all"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                      ถึงเวลา
+                    </label>
+                    <input
+                      type="time"
+                      value={initialData.endTime}
+                      onChange={(e) =>
+                        setInitialData({
+                          ...initialData,
+                          endTime: e.target.value,
+                        })
+                      }
+                      className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-700 outline-none focus:border-[#004a99] transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* ปุ่มสร้างรายการ */}
+                <button
+                  onClick={handleCreateRecord}
+                  className="w-full py-4 bg-[#004a99] hover:bg-[#003366] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-blue-900/20 transition-all active:scale-[0.98] border-b-4 border-blue-900 mt-4"
+                >
+                  สร้างรายการบันทึก
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

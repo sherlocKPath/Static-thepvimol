@@ -202,9 +202,9 @@ const MasterMachines = () => {
                 <button
                   type="button"
                   onClick={() => setTempSearch({ machineCode: "", type: "" })}
-                  className="px-6 py-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition text-sm font-bold active:scale-95"
+                  className="px-6 py-2 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition text-sm font-bold flex items-center active:scale-95"
                 >
-                  ล้างค่า
+                  <RotateCcw className="w-4 h-4 mr-1" /> ล้างค่า
                 </button>
                 <button
                   type="submit"
@@ -267,11 +267,10 @@ const MasterMachines = () => {
                     <td className="px-4 py-4 text-slate-600">{m.capacity}</td>
                     <td className="px-4 py-4 text-center">
                       <span
-                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter shadow-sm border ${
-                          m.status === "พร้อมใช้งาน"
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-tighter shadow-sm border ${m.status === "พร้อมใช้งาน"
                             ? "bg-emerald-100 text-emerald-700 border-emerald-200"
                             : "bg-red-100 text-red-600 border-red-200"
-                        }`}
+                          }`}
                       >
                         {m.status}
                       </span>
@@ -318,11 +317,10 @@ const MasterMachines = () => {
                   <button
                     key={index + 1}
                     onClick={() => setPageIndex(index + 1)}
-                    className={`w-8 h-8 text-xs rounded transition-all ${
-                      currentPageIndex === index + 1
+                    className={`w-8 h-8 text-xs rounded transition-all ${currentPageIndex === index + 1
                         ? "bg-[#004a99] text-white shadow-md"
                         : "text-slate-600 hover:bg-slate-200"
-                    }`}
+                      }`}
                   >
                     {index + 1}
                   </button>
@@ -452,24 +450,40 @@ const MasterMachines = () => {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase ml-1 tracking-widest">
                     สถานะเริ่มต้น
                   </label>
-                  <select
-                    className="w-full p-3.5 border border-slate-200 rounded-2xl font-bold text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                    /* 5. เชื่อมข้อมูลสถานะ */
-                    value={selectedMachine?.status || "พร้อมใช้งาน"}
-                    onChange={(e) =>
+
+                  <div
+                    onClick={() => {
+                      const nextStatus = selectedMachine?.status === "พร้อมใช้งาน" ? "ซ่อมบำรุง" : "พร้อมใช้งาน";
                       setSelectedMachine({
                         ...selectedMachine,
-                        status: e.target.value,
-                      })
-                    }
+                        status: nextStatus,
+                      });
+                    }}
+                    className={`flex items-center justify-between w-full p-3.5 border rounded-2xl cursor-pointer transition-all duration-300 ${selectedMachine?.status === "พร้อมใช้งาน"
+                        ? "bg-emerald-50 border-emerald-200"
+                        : "bg-red-50 border-red-200"
+                      }`}
                   >
-                    <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
-                    <option value="ซ่อมบำรุง">ซ่อมบำรุง</option>
-                    <option value="ว่าง (Idle)">ว่าง (Idle)</option>
-                  </select>
+                    {/* แสดงชื่อสถานะภาษาไทย */}
+                    <span className={`text-sm font-black ml-1 ${selectedMachine?.status === "พร้อมใช้งาน" ? "text-emerald-600" : "text-red-600"
+                      }`}>
+                      {selectedMachine?.status || "พร้อมใช้งาน"}
+                    </span>
+
+                    {/* ตัวปุ่ม Switch */}
+                    <div
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${selectedMachine?.status === "พร้อมใช้งาน" ? "bg-emerald-500" : "bg-red-500"
+                        }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform duration-300 ${selectedMachine?.status === "พร้อมใช้งาน" ? "translate-x-6" : "translate-x-1"
+                          }`}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

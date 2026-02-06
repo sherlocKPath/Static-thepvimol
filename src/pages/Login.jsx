@@ -18,7 +18,7 @@ const Login = ({ onLoginSuccess }) => {
       setTimeout(() => {
         onLoginSuccess();
       }, 1500);
-    }, 2000);
+    }, 1000);
   };
 
   return (
@@ -75,7 +75,7 @@ const Login = ({ onLoginSuccess }) => {
             <h1 className="text-3xl font-black text-slate-800 tracking-tight">
               Login to System
             </h1>
-            <p className="text-slate-400 font-bold mt-2 uppercase text-[10px] tracking-[0.2em]">
+            <p className="text-slate-400 font-bold mt-2 uppercase text-[10px] font-sans">
               กรุณาระบุข้อมูลเพื่อเข้าใช้งาน
             </p>
           </div>
@@ -93,7 +93,7 @@ const Login = ({ onLoginSuccess }) => {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+                  <label className="text-xs font-black text-slate-500 ml-1">
                     Email
                   </label>
                   <div className="relative">
@@ -112,7 +112,7 @@ const Login = ({ onLoginSuccess }) => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-500 uppercase tracking-widest ml-1">
+                  <label className="text-xs font-black text-slate-500 ml-1">
                     Password
                   </label>
                   <div className="relative">
